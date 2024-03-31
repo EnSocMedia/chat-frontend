@@ -5,7 +5,7 @@ interface ChatPageProps {
 }
 
 export default function ChatPage({ chatId }: ChatPageProps) {
-  const chats = useAppSelector((state) => state.websocket.chatMessage);
+  const chats = useAppSelector((state) => state.websocket.chatMessages);
 
   const messages = chats[chatId]?.messages;
 

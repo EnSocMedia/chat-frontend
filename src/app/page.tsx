@@ -7,7 +7,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { websocketConnect, websocketSendMessage } from "@/store/socket";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { getPastMessagesUsingLastTimestamp } from "@/store/message/actions";
+import { getMessagesOnBootstrap } from "@/store/message/actions";
 import SignUp from "@/components/SignUp";
 import Login from "@/components/Login";
 import { useAuth } from "@/hooks/useAuth";

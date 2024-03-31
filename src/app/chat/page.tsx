@@ -2,7 +2,7 @@
 
 import ChatPage from "@/components/ChatPage";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { sendMessageUsingHttp } from "@/store/message/actions";
+import { getMessagesUsingUserId, sendMessageUsingHttp } from "@/store/message/actions";
 import {
   webSocketReceiveMessage,
   websocketConnect,
@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 export default function Chat() {
   const [showChatPage, setShowChatPage] = useState<string>("");
   const dispatch = useAppDispatch();
-  const chats = useAppSelector((state) => state.websocket.chatsMessage);
+  const chats = useAppSelector((state) => state.websocket.chats);
   useEffect(() => {
     dispatch(websocketConnect());
   }, []);
@@ -38,6 +38,8 @@ export default function Chat() {
           })}
           <button
             onClick={() => {
+
+              // dispatch(websocketSendMessage())
               dispatch(
                 sendMessageUsingHttp({
                   uid: "sfbdsjbf",
@@ -48,22 +50,24 @@ export default function Chat() {
                 })
               );
 
-              dispatch(
-                webSocketReceiveMessage({
-                  message: {
-                    uid: "sfbdsjbf",
-                    message_type: "private_message",
-                    cipher: "HELLO",
-                    public_key:
-                      "03e76a177d1bcc2a47e7c85e9c2c224e2ca6b93b90b688eb36c2817cd2e61a80ce",
-                  } as any,
-                })
-              );
+              // dispatch(
+              //   webSocketReceiveMessage({
+              //     message: {
+              //       uid: "sfbdsjbf",
+              //       message_type: "private_message",
+              //       cipher: "HELLO",
+              //       public_key:
+              //         "03e76a177d1bcc2a47e7c85e9c2c224e2ca6b93b90b688eb36c2817cd2e61a80ce",
+              //     } as any,
+              //   })
+              // );
             }}
           >
             Send message
           </button>
+
         </div>
+        
       )}
 
       {showChatPage && (

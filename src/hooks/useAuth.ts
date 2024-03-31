@@ -9,17 +9,14 @@ export const useAuth = () => {
   const [isLogging, setIsLogging] = useState(false);
   const onUserRegister = async (privateKey: Buffer, name: string) => {
     try {
-
       setIsRegistering(true);
-      console.log("REGSITERING")
+      console.log("REGSITERING");
       await onRegister(privateKey, name);
-      console.log("REGISTERED")
+      console.log("REGISTERED");
       setIsRegistering(false);
-
-
     } catch (e) {
-        router.push("/chat");
-        console.log("REGISTERED",e)
+      router.push("/chat");
+      console.log("REGISTERED", e);
       setIsRegistering(false);
     }
   };
@@ -27,7 +24,9 @@ export const useAuth = () => {
   const onUserLogin = async (privateKey: Buffer) => {
     try {
       setIsLogging(true);
-      await onLogin(privateKey);
+      const { token } = await onLogin(privateKey);
+      localStorage.setItem("token", token);
+      router.push("/chat");
       setIsLogging(false);
     } catch (e) {
       setIsLogging(false);

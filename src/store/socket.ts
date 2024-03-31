@@ -11,13 +11,14 @@ import {
 
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  getPastMessagesUsingLastTimestamp,
+  getMessagesUsingUserId,
   sendMessageUsingHttp,
 } from "./message/actions";
 
-export interface ChatsMessage {
+export interface Chats {
   [public_key: string]: {
     last_message: string;
+    lastMessageId: string;
   };
 }
 
@@ -25,12 +26,18 @@ export interface ChatMessage {
   [public_key: string]: {
     messages: Message[];
     lastTimeStamp: number;
+    lastMessageId: string;
   };
 }
 
 export interface Messages {
-  chatsMessage: ChatsMessage;
-  chatMessage: ChatMessage;
+  chats: Chats;
+  chatMessages: ChatMessage;
+  isFetchingChats: {
+    [public_key: string]: {
+      isFecthing: boolean;
+    };
+  };
 }
 
 // Action creators
@@ -41,8 +48,9 @@ const webSocketReceiveMessage = createAction<{
 }>("Receive Websocket Message");
 
 const initialState: Messages = {
-  chatMessage: {},
-  chatsMessage: {},
+  chatMessages: {},
+  chats: {},
+  isFetchingChats: {},
 };
 
 function parseJwt(token: string) {
@@ -54,6 +62,9 @@ function parseJwt(token: string) {
   return JSON.parse(atob(base64));
 }
 
+/* 
+  Reducer for websocket actions
+*/
 export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
   builder
     .addCase(webSocketReceiveMessage, (state, { payload: { message } }) => {
@@ -64,40 +75,174 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       if (public_key == sender_key) {
         sender_key = message.to;
       }
-      const prevMessages = state.chatMessage[sender_key]
-        ? state.chatMessage[sender_key].messages
+      const prevMessages = state.chatMessages[sender_key]
+        ? state.chatMessages[sender_key].messages
         : [];
 
+      //If the message is already in the state discard it
+      const messageAlreadyExist = prevMessages.some(
+        (m) => m.messageId == message.messageId
+      );
+
+      if (messageAlreadyExist) return;
+
+      //TODO: Sort the messages according to timestamp
+      //Whenever a new message comes
+
       return {
-        chatMessage: {
+        chatMessages: {
+          ...state.chatMessages,
           [sender_key]: {
             messages: [...prevMessages, message],
             lastTimeStamp: message.time,
+            lastMessageId: message.messageId,
           },
         },
-        chatsMessage: {
-          ...state.chatsMessage,
-          [sender_key]: { last_message: message.cipher },
+        chats: {
+          ...state.chats,
+          [sender_key]: {
+            last_message: message.cipher,
+            lastMessageId: message.messageId,
+          },
+        },
+        isFetchingChats: {
+          ...state.isFetchingChats,
+          [sender_key]: {
+            isFecthing: false,
+          },
         },
       };
     })
-    .addCase(sendMessageUsingHttp.pending, (state, action) => {
-      {
+    .addCase(getMessagesUsingUserId.fulfilled, (state, action) => {
+      const messages = action.payload.messages;
+      const { userId } = action.meta.arg as { userId: string };
+
+      //TODO: Sort the messages according to timestamp
+      //Whenever a new message comes
+
+      //Get the Previous message of the same chatId using UserId
+      const prevMessages = state.chatMessages[userId]
+        ? state.chatMessages[userId].messages
+        : [];
+
+      //Check if the message is already in the state
+      const newMessages = messages.filter((message) => {
+        if (
+          prevMessages.some(
+            (prevMessage) => prevMessage.messageId === message.messageId
+          )
+        ) {
+          return false;
+        }
+
+        return true;
+      });
+
+      if (
+        state.chats[userId] !== undefined &&
+        state.chatMessages[userId] &&
+        state.chatMessages[userId].messages
+      ) {
+        return {
+          chatMessages: {
+            ...state.chatMessages,
+            [userId]: {
+              messages: [...prevMessages, ...newMessages],
+              lastTimeStamp:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].time
+                  : state.chatMessages[userId].lastTimeStamp,
+              lastMessageId:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].messageId
+                  : state.chatMessages[userId].lastMessageId,
+            },
+          },
+          chats: {
+            ...state.chats,
+            [userId]: {
+              last_message:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].cipher
+                  : state.chats[userId].last_message,
+              lastMessageId:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].cipher
+                  : state.chats[userId].lastMessageId,
+            },
+          },
+          isFetchingChats: {
+            ...state.isFetchingChats,
+            [userId]: {
+              isFecthing: false,
+            },
+          },
+        };
+      } else {
+        const hasMessage = newMessages.length > 0;
+        return {
+          chatMessages: {
+            ...state.chatMessages,
+            [userId]: {
+              messages: [...newMessages],
+              lastTimeStamp:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].time
+                  : 0,
+              lastMessageId:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].messageId
+                  : "",
+            },
+          },
+          chats: {
+            ...state.chats,
+            [userId]: {
+              last_message:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].cipher
+                  : "",
+              lastMessageId:
+                newMessages.length > 0
+                  ? newMessages[newMessages.length - 1].cipher
+                  : "",
+            },
+          },
+          isFetchingChats: {
+            ...state.isFetchingChats,
+            [userId]: {
+              isFecthing: false,
+            },
+          },
+        };
       }
+    })
+    .addCase(getMessagesUsingUserId.pending, (state, action) => {
+      const { userId } = action.meta.arg as { userId: string };
+
+      return {
+        chatMessages: {
+          ...state.chatMessages,
+        },
+        chats: {
+          ...state.chats,
+          [userId]: {
+            ...state.chats[userId],
+          },
+        },
+        isFetchingChats: {
+          ...state.isFetchingChats,
+          [userId]: {
+            isFecthing: false,
+          },
+        },
+      };
     })
 );
 
-// return {
-//   // chatMessage: [...state.chatMessage.messages],
-//   // chatsMessage: {
-//   //   ...state.chatsMessage,
-//   //   [sender_key]: { last_message: message.cipher },
-//   // },
-// };
-function parsePrivateMessage(message: string) {
-  return JSON.parse(message) as ChatMessage;
-}
-
+/*
+  Middleware to recieve all sockets messages and dispatch actions accordingly
+*/
 //@ts-ignore
 export const websocketMiddleware: Middleware = (store) => {
   let socket: WebSocket | null = null;
@@ -123,6 +268,8 @@ export const websocketMiddleware: Middleware = (store) => {
           })
         );
         break;
+      case "typing":
+
       default:
         console.log("Invalid Message type");
     }

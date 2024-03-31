@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { getPastMessagesUsingLastTimestamp } from "./actions";
+import { getMessagesUsingUserId } from "./actions";
 import { truncate } from "fs";
 
 export interface PastMessageFetchState {
@@ -14,11 +14,13 @@ export const initialState: PastMessageFetchState = {
 export const messageLoadingSlice = createReducer<PastMessageFetchState>(
   initialState,
   (builder) =>
-    builder.addCase(getPastMessagesUsingLastTimestamp.pending, (state, action) => {
+    builder
+      .addCase(getMessagesUsingUserId.pending, (state, action) => {
         state.isFecthingPastMessageStatus = true;
-        state.isFetchingPastMessages = true
-    }).addCase(getPastMessagesUsingLastTimestamp.fulfilled, (state, action) => {
+        state.isFetchingPastMessages = true;
+      })
+      .addCase(getMessagesUsingUserId.fulfilled, (state, action) => {
         state.isFecthingPastMessageStatus = false;
-        state.isFetchingPastMessages = false
-    })
+        state.isFetchingPastMessages = false;
+      })
 );

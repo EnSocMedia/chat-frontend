@@ -6,18 +6,17 @@ Send Message Over HTTP
 */
 export const sendMessageUsingHttp = createAsyncThunk(
   "messages/fetchByIdStatus",
-  async ( message:any,thunkAPI) => {
+  async (message: any, thunkAPI) => {
     const token = localStorage.getItem("token");
     const req = await fetch("http://localhost:3011/sendMessage", {
       method: "POST",
       body: JSON.stringify(message),
       headers: {
         "Content-Type": "application/json",
-        AUTHENTICATION: token ?? "",
+        "AUTHENTICATION": token ?? "",
       },
     });
 
-    
     const res = await req.json();
     console.log(res);
     return {} as Message;
@@ -27,10 +26,27 @@ export const sendMessageUsingHttp = createAsyncThunk(
 /* 
 Function to fetch All the message before the mentioned timestamp per chat Id
 */
-export const getPastMessagesUsingLastTimestamp = createAsyncThunk(
-  "messages/messagesUsingLastTimestamp",
-  async () => {
-    return {};
+export const getMessagesUsingUserId = createAsyncThunk(
+  "messages/getMessages",
+  async (data: any, thunkAPI) => {
+    const { userId, limit = 50, before, after } = data;
+    console.log("Getting messages",data)
+    const token = localStorage.getItem("token");
+    let url = `http://localhost:3011/user/${userId}/messages?limit=${limit}`;
+    if (before) {
+      url = url + `before=${before}`;
+    } else if (after) {
+      url = url + `before=${after}`;
+    }
+    const req = await fetch(url,{
+      headers:{
+        "AUTHENTICATION":token!
+      }
+    });
+
+    const res = (await req.json()) as Message[];
+    console.log("HOT RESPONSE",res)
+    return {messages:res};
   }
 );
 
