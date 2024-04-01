@@ -41,10 +41,6 @@ export default function Page({ params }: { params: { userid: string } }) {
       >
         Go back
       </div>
-      <div>
-        Hello
-        {params.userid}
-      </div>
       {isFetching && <div>Fetching</div>}
       {messages &&
         messages[params.userid] &&

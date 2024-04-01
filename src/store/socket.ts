@@ -247,15 +247,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       console.log("MESSAGES ON BOOTSTRAP", messages);
 
       let foo = {
-         chatMessages:{
-
-         },
-         chats:{
-
-         },
-         isFetchingChats:{
-          
-         }
+        chatMessages: {},
+        chats: {},
+        isFetchingChats: {},
       } as Messages;
 
       messages.forEach((message) => {
@@ -263,9 +257,10 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         if (public_key == sender_key) {
           sender_key = message.to;
         }
-        const prevMessageForThisChat = foo.chatMessages && foo.chatMessages[sender_key]!==undefined
-          ? foo.chatMessages[sender_key].messages
-          : [];
+        const prevMessageForThisChat =
+          foo.chatMessages && foo.chatMessages[sender_key] !== undefined
+            ? foo.chatMessages[sender_key].messages
+            : [];
         foo.chatMessages[sender_key] = {
           messages: [...prevMessageForThisChat, message],
           lastMessageId: message.messageId,
@@ -279,6 +274,17 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       });
 
       return foo;
+    })
+    .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
+      const message = action.payload;
+      console.log("MESSAGE IT",message)
+      state.chatMessages[message.to].messages.push(message);
+      state.chatMessages[message.to].lastTimeStamp = message.time;
+      state.chatMessages[message.to].lastMessageId = message.messageId;
+      state.chats[message.to].last_message = message.cipher;
+      state.chats[message.to].lastMessageId = message.messageId;
+
+      console.log("UPDATE")
     })
 );
 

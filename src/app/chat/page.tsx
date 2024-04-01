@@ -27,20 +27,6 @@ export default function Chat() {
   return (
     <div >
       <div>
-        Chat Page
-        {Object.entries(chats).map((chat, index) => {
-          return (
-            <div
-              key={index}
-              onClick={() => {
-                router.push(`chat/${chat[0]}`);
-              }}
-            >
-              {chat[0]}
-              <div>Message: {chat[1].last_message}</div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

@@ -27,14 +27,15 @@ export default function Layout({
 
   return (
     <div className="grid grid-cols-4 gap-2 h-[100vh] ">
-      <div className="col-span-1 flex flex-col justify-between px-4">
-        <div>
+      <div className="col-span-1 flex flex-col justify-between px-4 pt-4">
+        <div className="flex flex-col gap-2">
           {Object.entries(chats).map((chat, index) => {
             return (
               <div
+              className="px-4"
                 key={index}
                 onClick={() => {
-                  router.push(`chat/${chat[0]}`);
+                  router.push(`/chat/${chat[0]}`);
                 }}
               >
                 {chat[0]}

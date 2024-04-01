@@ -12,9 +12,11 @@ export interface MessageSend {
 Send Message Over HTTP
 */
 export const sendMessageUsingHttp = createAsyncThunk(
-  "messages/fetchByIdStatus",
+  "messages/sendMessage",
   async (message: MessageSend, thunkAPI) => {
+    console.log("SENDINF MESSAGES");
     const token = localStorage.getItem("token");
+    const publicKey = localStorage.getItem("publicKey");
     const req = await fetch("http://localhost:3011/sendMessage", {
       method: "POST",
       body: JSON.stringify(message),
@@ -23,10 +25,18 @@ export const sendMessageUsingHttp = createAsyncThunk(
         AUTHENTICATION: token ?? "",
       },
     });
-
-    const res = await req.json();
-    console.log(res);
-    return {} as Message;
+    console.log("SENDINF MESSsdsdsAGES");
+    return {
+      cipher: message.cipher,
+      from: publicKey,
+      time: 23523445,
+      messageId: "sdsdsd",
+      messageType: "private_message",
+      id:'efgrsdgv',
+      name:'Athul',
+      to:message.publicKey,
+      uid:'sdsds'
+    } as Message;
   }
 );
 
