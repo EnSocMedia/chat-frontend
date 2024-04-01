@@ -1,4 +1,5 @@
 "use client";
+import Chat from "@/components/Chat";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
@@ -10,6 +11,7 @@ import {
 } from "@/store/message/actions";
 import { Message } from "@/types/message";
 import { useRouter } from "next/navigation";
+import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useState } from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -31,6 +33,13 @@ export default function Page({ params }: { params: { userid: string } }) {
 
     dispatch(sendMessageUsingHttp(message));
   }
+  return(
+    <div>
+      <Navbar/>
+      <Sidebar/>
+      <Chat userid={params.userid}/>
+    </div>
+  )
 
   return (
     <div>
@@ -51,10 +60,11 @@ export default function Page({ params }: { params: { userid: string } }) {
     <div className="ml-1/6 p-8 w-5/6 ">
       <div className="border-4 rounded-lg">
     <div className="flex items-center flex-col text-white pt-20"></div>
+    <Chat userid={params.userid}/>
       {isFetching && <div>Fetching</div>}
       {messages &&
         messages[params.userid] &&
-        messages[params.userid].messages.map((message, index) => {
+        messages[params.userid].messages.map((message: { cipher: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }, index: Key | null | undefined) => {
           return <div key={index}>{message.cipher}</div>;
         })}
 
