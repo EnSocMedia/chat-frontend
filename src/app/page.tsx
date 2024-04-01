@@ -18,6 +18,15 @@ export default function Home() {
   const [privateKey, setPrivateKey] = useState(Buffer.from([]));
   const [showAuth, setShowAuth] = useState(false);
   const { isLogging, isRegistering, onUserLogin, onUserRegister } = useAuth();
+  const [page,setPage] =useState("Signin");
+  function setsignup()
+  {
+    setPage("Signup");
+  }
+  function setsignin()
+  {
+    setPage("Signin");
+  }
   // useEffect(() => {
   //   /* Dispatch Actions to get all previous messages when user was Offline,Message status*/
   //   dispatch(getPastMessagesUsingLastTimestamp());
@@ -34,8 +43,8 @@ export default function Home() {
   return (
     <main className="flex items-center justify-center min-h-screen">
       {/* <button onClick={onLogin}>Login</button> */}
-      <SignUp onRegister={onUserRegister} />
-      <Login onLogin={onUserLogin} />
+      {page ==="Signin" && <Login onLogin={onUserLogin} setsignup={setsignup} />}
+      {page === "Signup" && <SignUp onRegister={onUserRegister} setsignin={setsignin} />}
     </main>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import ChatPage from "@/components/ChatPage";
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   getMessagesOnBootstrap,
@@ -27,6 +29,8 @@ export default function Chat() {
   return (
     <div >
       <div>
+      <Navbar/>
+      <Sidebar/>
       </div>
     </div>
   );

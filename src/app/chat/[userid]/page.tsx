@@ -1,4 +1,6 @@
 "use client";
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -31,6 +33,7 @@ export default function Page({ params }: { params: { userid: string } }) {
   }
 
   return (
+    <div>
     <div className="text-white">
       <div
         onClick={() => {
@@ -41,6 +44,13 @@ export default function Page({ params }: { params: { userid: string } }) {
       >
         Go back
       </div>
+      <div>
+    <Navbar/>
+    <div className='flex'>
+    <Sidebar/>
+    <div className="ml-1/6 p-8 w-5/6 ">
+      <div className="border-4 rounded-lg">
+    <div className="flex items-center flex-col text-white pt-20"></div>
       {isFetching && <div>Fetching</div>}
       {messages &&
         messages[params.userid] &&
@@ -58,6 +68,11 @@ export default function Page({ params }: { params: { userid: string } }) {
         />
         <button onClick={messageSendHandler}>Send</button>
       </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
     </div>
   );
 }
