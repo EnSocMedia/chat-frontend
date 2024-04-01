@@ -18,6 +18,7 @@ export const onRegister = async (privateKey: Buffer,name:string) => {
     message: msg,
     name: name,
   };
+  
   const req = await fetch("http://localhost:3011/signin", {
     method: "POST",
     body: JSON.stringify(sendObj),

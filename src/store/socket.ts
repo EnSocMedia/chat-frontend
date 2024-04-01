@@ -11,6 +11,7 @@ import {
 
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  getMessagesOnBootstrap,
   getMessagesUsingUserId,
   sendMessageUsingHttp,
 } from "./message/actions";
@@ -237,6 +238,47 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           },
         },
       };
+    })
+    .addCase(getMessagesOnBootstrap.fulfilled, (state, action) => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const { public_key } = parseJwt(token);
+      const messages = action.payload.messages;
+      console.log("MESSAGES ON BOOTSTRAP", messages);
+
+      let foo = {
+         chatMessages:{
+
+         },
+         chats:{
+
+         },
+         isFetchingChats:{
+          
+         }
+      } as Messages;
+
+      messages.forEach((message) => {
+        let sender_key = message.from;
+        if (public_key == sender_key) {
+          sender_key = message.to;
+        }
+        const prevMessageForThisChat = foo.chatMessages && foo.chatMessages[sender_key]!==undefined
+          ? foo.chatMessages[sender_key].messages
+          : [];
+        foo.chatMessages[sender_key] = {
+          messages: [...prevMessageForThisChat, message],
+          lastMessageId: message.messageId,
+          lastTimeStamp: message.time,
+        };
+
+        foo.chats[sender_key] = {
+          last_message: message.cipher,
+          lastMessageId: message.messageId,
+        };
+      });
+
+      return foo;
     })
 );
 

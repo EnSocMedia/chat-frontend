@@ -24,8 +24,9 @@ export const useAuth = () => {
   const onUserLogin = async (privateKey: Buffer) => {
     try {
       setIsLogging(true);
-      const { token } = await onLogin(privateKey);
+      const { token, publicKey } = await onLogin(privateKey);
       localStorage.setItem("token", token);
+      localStorage.setItem("publicKey", publicKey);
       router.push("/chat");
       setIsLogging(false);
     } catch (e) {

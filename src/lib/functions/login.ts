@@ -31,5 +31,8 @@ export const onLogin = async (privateKey: Buffer) => {
 
   const res = (await req.json()) as { token: string };
 
-  return res
+  return {
+    publicKey: toHexString(pubKey),
+    token: res.token,
+  };
 };
