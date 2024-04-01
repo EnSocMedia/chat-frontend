@@ -50,8 +50,8 @@ export default function Sidebar({ }) {
       };
 
     return (
-            <div className="bg-[#170048] w-1/6 h-full overflow-y-auto fixed top-16 left-0 z-50 pb-20">
-                <div className="bg-[#170048] py-4 px-6 border-b border-gray-400">
+            <div className="bg-[#020212] w-1/6 h-full overflow-y-auto fixed top-16 left-0 z-50 pb-20">
+                <div className="bg-[#020212] py-4 px-6 border-b border-gray-400">
                     <h2 className="text-lg font-semibold">Users </h2>
                 </div>
                 <div className="p-4">
