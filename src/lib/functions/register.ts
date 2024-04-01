@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 import secp256k1 from "secp256k1";
 import { fromHexString, toHexString } from "./utils";
 
-export const onRegister = async (privateKey: Buffer,name:string) => {
+export const onRegister = async (privateKey: Uint8Array,name:string) => {
   const msg = "Hello";
   let hash = createHash("sha256").update(msg).digest("hex");
 
@@ -18,7 +18,7 @@ export const onRegister = async (privateKey: Buffer,name:string) => {
     message: msg,
     name: name,
   };
-  
+
   const req = await fetch("http://localhost:3011/signin", {
     method: "POST",
     body: JSON.stringify(sendObj),

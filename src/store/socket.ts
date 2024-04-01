@@ -94,7 +94,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         chatMessages: {
           ...state.chatMessages,
           [sender_key]: {
-            messages: [...prevMessages, message],
+            messages: [message, ...prevMessages],
             lastTimeStamp: message.time,
             lastMessageId: message.messageId,
           },
@@ -277,14 +277,14 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
     })
     .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
       const message = action.payload;
-      console.log("MESSAGE IT",message)
-      state.chatMessages[message.to].messages.push(message);
+      console.log("MESSAGE IT", message);
+      state.chatMessages[message.to].messages.unshift(message);
       state.chatMessages[message.to].lastTimeStamp = message.time;
       state.chatMessages[message.to].lastMessageId = message.messageId;
       state.chats[message.to].last_message = message.cipher;
       state.chats[message.to].lastMessageId = message.messageId;
 
-      console.log("UPDATE")
+      console.log("UPDATE");
     })
 );
 
@@ -308,6 +308,7 @@ export const websocketMiddleware: Middleware = (store) => {
     const messsage = event.data;
     console.log(messsage);
     const messageType = JSON.parse(messsage).message_type;
+
     switch (messageType) {
       case "private_message":
         store.dispatch(

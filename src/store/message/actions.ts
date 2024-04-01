@@ -14,7 +14,7 @@ Send Message Over HTTP
 export const sendMessageUsingHttp = createAsyncThunk(
   "messages/sendMessage",
   async (message: MessageSend, thunkAPI) => {
-    console.log("SENDINF MESSAGES");
+    
     const token = localStorage.getItem("token");
     const publicKey = localStorage.getItem("publicKey");
     const req = await fetch("http://localhost:3011/sendMessage", {

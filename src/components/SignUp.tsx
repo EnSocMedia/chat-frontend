@@ -1,10 +1,10 @@
 import useGenerateMnemonic from "@/hooks/useGenerateMnemonic";
-import { sha256 } from "@/lib/words-algo/conversion";
 import generateMnemonicWords from "@/lib/words-algo/wordsGen";
+import { sha256 } from "@noble/hashes/sha256";
 import { useRef, useState } from "react";
 
 interface SignUpProps {
-  onRegister: (privateKey: Buffer,name:string) => Promise<void>;
+  onRegister: (privateKey: Uint8Array,name:string) => Promise<void>;
   setsignin:any;
 }
 
@@ -13,8 +13,9 @@ export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
 
   const [userName, setUserName] = useState("");
   async function registerHandler() {
-    const privateKey = await sha256(mnemonic.join(" "));
-    const privateKeyBuffer = Buffer.from(privateKey, "hex");
+    console.log("Mnemoni on signup",mnemonic.join(" "))
+    const privateKeyBuffer =  sha256(mnemonic.join(" "));
+
     await onRegister(privateKeyBuffer,userName);
   }
 

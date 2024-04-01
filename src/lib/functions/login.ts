@@ -2,15 +2,13 @@ import { createHash } from "crypto";
 import secp256k1 from "secp256k1";
 import { fromHexString, toHexString } from "./utils";
 
-export const onLogin = async (privateKey: Buffer) => {
+export const onLogin = async (privateKey: Uint8Array) => {
   const msg = "Hello";
   let hash = createHash("sha256").update(msg).digest("hex");
 
   // get the public key in a compressed format
   const pubKey = secp256k1.publicKeyCreate(privateKey);
 
-  console.log("PRIVATE KEY ON LOGIN", privateKey);
-  console.log("PUBLIC KEY ON LOGIN", pubKey);
   // sign the message
   const sigObj = secp256k1.ecdsaSign(fromHexString(hash), privateKey);
   console.log(sigObj);
@@ -31,6 +29,9 @@ export const onLogin = async (privateKey: Buffer) => {
 
   const res = (await req.json()) as { token: string };
 
+  if (req.status !== 200) {
+    throw new Error("Failed to Login");
+  }
   return {
     publicKey: toHexString(pubKey),
     token: res.token,

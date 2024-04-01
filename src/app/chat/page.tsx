@@ -21,16 +21,13 @@ export default function Chat() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const chats = useAppSelector((state) => state.websocket.chats);
-  useEffect(() => {
-    dispatch(websocketConnect());
-    dispatch(getMessagesOnBootstrap());
-  }, []);
+
 
   return (
-    <div >
-      <div>
-      <Navbar/>
-      <Sidebar/>
+    <div className="flex justify-center items-center h-full">
+      <div className="font-bold text-[24px] px-10 text-center">
+        Welcome to EncSoMedia Chat With anyone in this word securely with just a
+        cryptographic keys
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 "use client";
+import ChatText from "@/components/ChatText";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
@@ -33,46 +34,55 @@ export default function Page({ params }: { params: { userid: string } }) {
   }
 
   return (
-    <div>
-    <div className="text-white">
-      <div
-        onClick={() => {
-          router.push("/chat", {
-            scroll: true,
-          });
-        }}
-      >
-        Go back
-      </div>
-      <div>
-    <Navbar/>
-    <div className='flex'>
-    <Sidebar/>
-    <div className="ml-1/6 p-8 w-5/6 ">
-      <div className="border-4 rounded-lg">
-    <div className="flex items-center flex-col text-white pt-20"></div>
-      {isFetching && <div>Fetching</div>}
-      {messages &&
-        messages[params.userid] &&
-        messages[params.userid].messages.map((message, index) => {
-          return <div key={index}>{message.cipher}</div>;
-        })}
-
-      <div>
-        <input
-          onChange={(e) => {
-            setTextToSend(e.target.value);
+    <div className="h-[90vh] p-4">
+      <div className="text-white h-full">
+        <button
+          onClick={() => {
+            router.push("/chat", {
+              scroll: true,
+            });
           }}
-          type="text"
-          className="text-black"
-        />
-        <button onClick={messageSendHandler}>Send</button>
+        >
+          Go back
+        </button>
+        <div className="h-full flex flex-col justify-end gap-4">
+          {isFetching && <div>Fetching</div>}
+          <div className="flex gap-2 flex-col">
+            {messages &&
+              messages[params.userid] &&
+              messages[params.userid].messages.map((message, index) => {
+                return (
+                  <div
+                    key={index}
+                    className={`${
+                      message.from == params.userid ? "text-left" : "text-right"
+                    }`}
+                  >
+                    <ChatText
+                      sent={message.to == params.userid}
+                      text={message.cipher}
+                    />
+                  </div>
+                );
+              }).reverse()}
+          </div>
+          <div className="w-full flex gap-2">
+            <input
+              onChange={(e) => {
+                setTextToSend(e.target.value);
+              }}
+              type="text"
+              className="text-black bg-red w-full rounded-md"
+            />
+            <button
+              className="bg-blue-600 p-2 rounded-md "
+              onClick={messageSendHandler}
+            >
+              Send
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
     </div>
   );
 }
