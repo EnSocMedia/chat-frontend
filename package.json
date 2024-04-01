@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@noble/ciphers": "^0.5.2",
+    "@noble/curves": "^1.4.0",
+    "@noble/hashes": "^1.4.0",
     "@reduxjs/toolkit": "^2.2.1",
     "eciesjs": "^0.4.6",
     "next": "14.1.3",

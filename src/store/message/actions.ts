@@ -25,7 +25,6 @@ export const sendMessageUsingHttp = createAsyncThunk(
         AUTHENTICATION: token ?? "",
       },
     });
-    console.log("SENDINF MESSsdsdsAGES");
     return {
       cipher: message.cipher,
       from: publicKey,
