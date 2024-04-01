@@ -50,22 +50,22 @@ export default function Sidebar({ }) {
       };
 
     return (
-            <div className="bg-gray-200 w-1/6 h-full overflow-y-auto fixed top-16 left-0 z-50 pb-20">
-                <div className="bg-gray-300 py-4 px-6 border-b border-gray-400">
+            <div className="bg-[#170048] w-1/6 h-full overflow-y-auto fixed top-16 left-0 z-50 pb-20">
+                <div className="bg-[#170048] py-4 px-6 border-b border-gray-400">
                     <h2 className="text-lg font-semibold">Users </h2>
                 </div>
                 <div className="p-4">
                     <ul>
                     {Object.entries(sampleChats).map(([publicKey, chat])=>{
                             return <div key={publicKey}>
-                                <div className="rounded-none border-b-2 border-black p-y-2">
+                                <div className="rounded-none border-b-2 border-white p-y-2">
                                 <li className="py-4">
                             <div className="flex items-center user-item cursor-pointer">
                             <a href={'/chat/' + publicKey} className="flex items-center user-item">
                                 <div>
                                 
-                                    <h3 className="text-gray-800 font-semibold">User {publicKey}</h3>
-                                    <p className="text-gray-600 text-sm">{chat.last_message}</p>
+                                    <h3 className="text-white-600 font-semibold">User {publicKey}</h3>
+                                    <p className="text-white-600 text-sm">{chat.last_message}</p>
                                 </div>
                                 </a>
                             </div>
