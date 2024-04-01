@@ -278,6 +278,28 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
     .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
       const message = action.payload;
       console.log("MESSAGE IT", message);
+      if (state.chatMessages[message.to] === undefined) {
+        return {
+          chatMessages: {
+            [message.to]: {
+              messages: [message],
+              lastMessageId: message.messageId,
+              lastTimeStamp: message.time,
+            },
+          },
+          chats: {
+            [message.to]: {
+              last_message: message.cipher,
+              lastMessageId: message.messageId,
+            },
+          },
+          isFetchingChats: {
+            [message.to]: {
+              isFecthing: false,
+            },
+          },
+        };
+      }
       state.chatMessages[message.to].messages.unshift(message);
       state.chatMessages[message.to].lastTimeStamp = message.time;
       state.chatMessages[message.to].lastMessageId = message.messageId;

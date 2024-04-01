@@ -6,6 +6,8 @@ interface ChatTextProps {
 
 export default function ChatText({ text, sent }: ChatTextProps) {
   return (
-    <span className={`${sent ? "bg-slate-700" : "bg-lime-600 "}`}>{text}</span>
+    <div className={`${sent ? "text-right" : "text-left "} p-2 `}>
+      <span className={`${sent ? "bg-blue-500" : "bg-gray-200  text-black  "} p-2 rounded-lg `}>{text}</span>
+    </div>
   );
 }

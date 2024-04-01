@@ -47,24 +47,20 @@ export default function Page({ params }: { params: { userid: string } }) {
         </button>
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}
-          <div className="flex gap-2 flex-col">
+          <div className="flex gap-2 flex-col overflow-y-scroll">
             {messages &&
               messages[params.userid] &&
-              messages[params.userid].messages.map((message, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={`${
-                      message.from == params.userid ? "text-left" : "text-right"
-                    }`}
-                  >
+              messages[params.userid].messages
+                .map((message, index) => {
+                  return (
                     <ChatText
+                      key={index}
                       sent={message.to == params.userid}
                       text={message.cipher}
                     />
-                  </div>
-                );
-              }).reverse()}
+                  );
+                })
+                .reverse()}
           </div>
           <div className="w-full flex gap-2">
             <input

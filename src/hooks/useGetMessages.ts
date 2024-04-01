@@ -34,6 +34,6 @@ export const useGetMessagesUsingUserId = (userId: string) => {
   return {
     isFetching: isFetchingMoreMessages[userId]
       ? isFetchingMoreMessages[userId].isFecthing
-      : true,
+      : false,
   };
 };
