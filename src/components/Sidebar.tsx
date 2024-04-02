@@ -58,7 +58,7 @@ export default function Sidebar({ }) {
                     <ul>
                     {Object.entries(sampleChats).map(([publicKey, chat])=>{
                             return <div key={publicKey}>
-                                <div className="rounded-none border-b-2 border-white p-y-2">
+                                <div className="rounded-none border-b-2 border-[#30323E] p-y-2">
                                 <li className="py-4">
                             <div className="flex items-center user-item cursor-pointer">
                             <a href={'/chat/' + publicKey} className="flex items-center user-item">
