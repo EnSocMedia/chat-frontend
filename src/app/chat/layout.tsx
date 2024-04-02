@@ -22,6 +22,10 @@ export default function Layout({
   }, []);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(!token){
+      router.push("/")
+    }
     const publicKey = localStorage.getItem("publicKey");
     setPublicKey(publicKey);
   }, []);
@@ -34,12 +38,12 @@ export default function Layout({
   return (
     <>
       <Navbar />
-      <div className="grid grid-cols-4 gap-2 h-[91vh] ">
-        <div className="bg-gray-200 col-span-1 pb-20">
+      <div className="grid grid-cols-4 gap-2  ">
+        <div className="bg-gray-200 col-span-1">
           <div className="bg-gray-300 py-4 px-6 border-b border-gray-400">
             <h2 className="text-lg font-semibold">Users </h2>
           </div>
-          <div className="p-4">
+          <div className="p-4 overflow-y-auto h-[70vh]">
             <ul>
               {Object.entries(chats).map(([publicKey, chat]) => {
                 return (
@@ -67,8 +71,8 @@ export default function Layout({
                 );
               })}
             </ul>
-            <Profile name="Athul" publicKey={publicKey!} />
           </div>
+          <Profile name="Athul" publicKey={publicKey!} />
         </div>
 
         <div className="col-span-3">{children}</div>

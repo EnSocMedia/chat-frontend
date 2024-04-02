@@ -27,18 +27,7 @@ export default function Home() {
   {
     setPage("Signin");
   }
-  // useEffect(() => {
-  //   /* Dispatch Actions to get all previous messages when user was Offline,Message status*/
-  //   dispatch(getPastMessagesUsingLastTimestamp());
-  // }),
-  //   [];
 
-  // useEffect(()=>{
-  //     const token = localStorage.getItem('token')
-  //     if(token){
-  //       router.push("/chat")
-  //     }
-  // },[])
 
   return (
     <main className="flex items-center justify-center min-h-screen">

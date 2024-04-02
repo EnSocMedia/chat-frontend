@@ -27,4 +27,9 @@ export const onRegister = async (privateKey: Uint8Array,name:string) => {
     },
   });
   const res = await req.json();
+
+  return {
+    publicKey: toHexString(pubKey),
+    token: res.token,
+  };
 };
