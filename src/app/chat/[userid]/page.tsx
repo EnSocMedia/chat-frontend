@@ -1,5 +1,6 @@
 "use client";
 import ChatText from "@/components/ChatText";
+import Chatnavbar from "@/components/Chatnavbar";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
@@ -34,17 +35,9 @@ export default function Page({ params }: { params: { userid: string } }) {
   }
 
   return (
-    <div className="h-[90vh] p-4">
+    <div className="h-[88vh] p-4">
+      <Chatnavbar userid={params.userid}/>
       <div className="text-white h-full">
-        <button
-          onClick={() => {
-            router.push("/chat", {
-              scroll: true,
-            });
-          }}
-        >
-          Go back
-        </button>
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}
           <div className="flex gap-2 flex-col overflow-y-scroll">
