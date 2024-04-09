@@ -9,27 +9,27 @@ export const useGetMessagesUsingUserId = (userId: string) => {
   );
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const userMessages = messages[userId];
+  // useEffect(() => {
+  //   const userMessages = messages[userId];
 
-    //If if there is already message stored in state
-    //If not fetch with 50 limit
-    if (!userMessages) {
-      dispatch(getMessagesUsingUserId({ userId: userId, limit: 50 }));
-    } else if (userMessages && userMessages.messages.length == 0) {
-      dispatch(getMessagesUsingUserId({ userId: userId, limit: 50 }));
-    } else {
-      //TODO:
-      //Fetch More messages on Scroll by sending last message Id
-      dispatch(
-        getMessagesUsingUserId({
-          userId: userId,
-          limit: 50,
-          before: userMessages.lastMessageId,
-        })
-      );
-    }
-  }, [dispatch, userId]);
+  //   //If if there is already message stored in state
+  //   //If not fetch with 50 limit
+  //   if (!userMessages) {
+  //     dispatch(getMessagesUsingUserId({ userId: userId, limit: 50 }));
+  //   } else if (userMessages && userMessages.messages.length == 0) {
+  //     dispatch(getMessagesUsingUserId({ userId: userId, limit: 50 }));
+  //   } else {
+  //     //TODO:
+  //     //Fetch More messages on Scroll by sending last message Id
+  //     dispatch(
+  //       getMessagesUsingUserId({
+  //         userId: userId,
+  //         limit: 50,
+  //         before: userMessages.lastMessageId,
+  //       })
+  //     );
+  //   }
+  // }, [dispatch, userId]);
 
   return {
     isFetching: isFetchingMoreMessages[userId]

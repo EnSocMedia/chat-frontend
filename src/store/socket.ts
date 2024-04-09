@@ -54,7 +54,7 @@ const initialState: Messages = {
   isFetchingChats: {},
 };
 
-function parseJwt(token: string) {
+export function parseJwt(token: string) {
   if (!token) {
     return;
   }

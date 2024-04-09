@@ -10,9 +10,10 @@ import {
   getMessagesUsingUserId,
   sendMessageUsingHttp,
 } from "@/store/message/actions";
+import { websocketConnect } from "@/store/socket";
 import { Message } from "@/types/message";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 export default function Page({ params }: { params: { userid: string } }) {
@@ -21,6 +22,10 @@ export default function Page({ params }: { params: { userid: string } }) {
   const { isFetching } = useGetMessagesUsingUserId(params.userid);
   const [textToSend, setTextToSend] = useState("");
   const router = useRouter();
+
+  useEffect(()=>{
+    dispatch(websocketConnect())
+  },[])
 
   function messageSendHandler() {
     const publicKey = localStorage.getItem("publicKey");
@@ -32,11 +37,12 @@ export default function Page({ params }: { params: { userid: string } }) {
     } as MessageSend;
 
     dispatch(sendMessageUsingHttp(message));
+    setTextToSend("");
   }
 
   return (
     <div className="h-[88vh] p-4">
-      <Chatnavbar userid={params.userid}/>
+      <Chatnavbar userid={params.userid} />
       <div className="text-white h-full">
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}
@@ -55,8 +61,9 @@ export default function Page({ params }: { params: { userid: string } }) {
                 })
                 .reverse()}
           </div>
-          <div className="w-full flex gap-2">
+          <div className="w-full flex gap-2 pb-4">
             <input
+              value={textToSend}
               onChange={(e) => {
                 setTextToSend(e.target.value);
               }}

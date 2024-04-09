@@ -17,10 +17,10 @@ export default function Login({ onLogin, setsignup }: LoginProps) {
 
   return (
     <div className="flex items-center flex-col gap-7">
-      <div className="text-3xl"> Log in to Chatbox</div>
+      <div className="text-3xl"> Log in to EnSocMedia</div>
       <div className=" flex items-center flex-col border-solid border-4 rounded-lg border-white py-5 px-8">
         <div className="text-xl text-white text-center">
-          Welcome back! Sign in using your social account
+          Welcome back! Sign in using your mnemonic words
         </div>
         <div className="flex pt-5 pb-5">
           <svg
@@ -52,12 +52,6 @@ export default function Login({ onLogin, setsignup }: LoginProps) {
         >
           Login
         </button>
-        <a
-          href="#"
-          className="font-medium text-blue-600 dark:text-blue-500 hover:underline pt-5"
-        >
-          Forgot Password?
-        </a>
       </div>
       <div className="flex items-center">
         <div className="flex-1 border-t-2 border-white"></div>
