@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { onRegister } from "@/lib/functions/register";
 import { onLogin } from "@/lib/functions/login";
 import { useRouter } from "next/navigation";
+import { toHexString } from "@/lib/functions/utils";
+import { toHex } from "viem";
+
 
 export const useAuth = () => {
   const router = useRouter();
@@ -14,6 +17,7 @@ export const useAuth = () => {
       const { publicKey, token } = await onRegister(privateKey, name);
       localStorage.setItem("token", token);
       localStorage.setItem("publicKey", publicKey);
+      localStorage.setItem("privatekey",toHexString(privateKey));
       router.push("/chat");
       setIsRegistering(false);
     } catch (e) {
@@ -28,6 +32,9 @@ export const useAuth = () => {
       const { token, publicKey } = await onLogin(privateKey);
       localStorage.setItem("token", token);
       localStorage.setItem("publicKey", publicKey);
+      localStorage.setItem("privateKey",toHex(privateKey));
+      console.log("Private key");
+      console.log(toHex(privateKey));
       router.push("/chat");
       setIsLogging(false);
     } catch (e) {

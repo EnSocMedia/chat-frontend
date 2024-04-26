@@ -4,6 +4,7 @@ import Chatnavbar from "@/components/Chatnavbar";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
+import sendTypingInfo from "@/services/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   MessageSend,
@@ -65,6 +66,7 @@ export default function Page({ params }: { params: { userid: string } }) {
             <input
               value={textToSend}
               onChange={(e) => {
+                sendTypingInfo(params.userid);
                 setTextToSend(e.target.value);
               }}
               type="text"

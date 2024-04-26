@@ -97,6 +97,10 @@ export default function Layout({
           <div className="p-4 overflow-y-auto overflow-x-hidden h-[60vh] border-b border-gray-40 ">
             <ul>
               {Object.entries(chats).map(([publicKey, chat]) => {
+                let isTyping=false;
+                if (chat) {
+                  isTyping = chat.isTyping;
+                }
                 return (
                   <div key={publicKey}>
                     <div className="rounded-none border-b-2 border-[#30323E] p-y-2 ">
@@ -112,9 +116,10 @@ export default function Layout({
                               <span>User</span>
                               <span className="break-all">{publicKey}</span>
                             </h3>
+                            {isTyping ? <p className="text-green-500">...Typing</p> :
                             <p className="text-white-600 text-sm">
                               {chat.last_message}
-                            </p>
+                            </p>}
                           </div>
                         </div>
                       </li>

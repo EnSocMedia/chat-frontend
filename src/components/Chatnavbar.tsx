@@ -1,10 +1,21 @@
+import { useAppSelector } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 interface Chatnavbarprops {
   userid: string;
 }
+const truncateString = (str: string) => {
+  return str.length > 15 ? str.substring(0, 15) + "..." : str;
+}
 
 export default function Chatnavbar({ userid }: Chatnavbarprops) {
   const router = useRouter();
+  const chat = useAppSelector((state) => state.websocket.chats[userid]);
+  let isTyping=false;
+  if (chat) {
+    isTyping = chat.isTyping;
+  }
+  const trunuserid=truncateString(userid);
+  //isTyping= chat.isTyping;
   return (
     <div>
       <nav className="bg-white shadow-lg">
@@ -32,7 +43,10 @@ export default function Chatnavbar({ userid }: Chatnavbarprops) {
               />
             </svg>
           </button>
-          <h1 className="text-lg font-semibold text-gray-900 pl-2">{userid}</h1>
+          <h1 className="text-lg font-semibold text-gray-900 pl-2">{trunuserid}</h1>
+          <div>
+      {isTyping ? <div className="text-green-500">...Typing</div> : null}
+    </div>
           <div className="flex items-center">
             <button className="text-gray-600 focus:outline-none focus:text-gray-900 mr-2 pr-2">
               <svg

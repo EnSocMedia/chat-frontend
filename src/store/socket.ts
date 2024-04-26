@@ -8,7 +8,6 @@ import {
   current,
   isAnyOf,
 } from "@reduxjs/toolkit";
-
 import { createSlice } from "@reduxjs/toolkit";
 import {
   getMessagesOnBootstrap,
@@ -20,6 +19,7 @@ export interface Chats {
   [public_key: string]: {
     last_message: string;
     lastMessageId: string;
+    isTyping:boolean;
   };
 }
 
@@ -47,12 +47,31 @@ const websocketSendMessage = () => ({ type: "SEND_MESSAGE" });
 const webSocketReceiveMessage = createAction<{
   message: Message;
 }>("Receive Websocket Message");
+const webSocketReceiveTyping = createAction<{
+  publicKey: string;
+}>("Receive Typing info");
+const webSocketTypingEnded = createAction<{
+  publicKey:string;
+}>("Ended Typing");
 
 const initialState: Messages = {
   chatMessages: {},
   chats: {},
   isFetchingChats: {},
 };
+
+
+// export const handleTypingTimeout = (publicKey: string) => () => {
+//   setTimeout(() => {
+//     store.dispatch(webSocketTypingEnded({ publicKey }));
+//   }, 3000);
+// };
+
+const receiveTypingWithTimeout = (publicKey: string) => (dispatch) => {
+  dispatch(webSocketReceiveTyping({publicKey:publicKey}));
+  setTimeout(() => dispatch(webSocketTypingEnded({publicKey: publicKey})), 3000);
+};
+
 
 export function parseJwt(token: string) {
   if (!token) {
@@ -104,6 +123,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           [sender_key]: {
             last_message: message.cipher,
             lastMessageId: message.messageId,
+            isTyping: false,
           },
         },
         isFetchingChats: {
@@ -170,6 +190,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
                 newMessages.length > 0
                   ? newMessages[newMessages.length - 1].cipher
                   : state.chats[userId].lastMessageId,
+              isTyping: false,
             },
           },
           isFetchingChats: {
@@ -207,6 +228,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
                 newMessages.length > 0
                   ? newMessages[newMessages.length - 1].cipher
                   : "",
+              isTyping : false,
             },
           },
           isFetchingChats: {
@@ -270,6 +292,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         foo.chats[sender_key] = {
           last_message: message.cipher,
           lastMessageId: message.messageId,
+          isTyping: false
         };
       });
 
@@ -294,6 +317,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             [message.to]: {
               last_message: message.cipher,
               lastMessageId: message.messageId,
+              isTyping: false,
             },
           },
           isFetchingChats: {
@@ -312,6 +336,86 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
 
       console.log("UPDATE");
     })
+    .addCase(webSocketReceiveTyping, (state , { payload : { publicKey } }) => {
+       const token = localStorage.getItem("token");
+       if (!token) return;
+       console.log("called");
+       console.log(state.chats[publicKey].isTyping);
+       if (state.chats[publicKey])
+        {
+          if (state.chats[publicKey].isTyping===false){
+          return {
+            chatMessages: {
+              ...state.chatMessages
+            },
+            chats: {
+              ...state.chats,
+              [publicKey]:{
+                last_message:state.chats[publicKey].last_message,
+                lastMessageId:state.chats[publicKey].lastMessageId,
+                isTyping: true,
+              }
+            },
+            isFetchingChats :
+            {
+              ...state.isFetchingChats
+            }
+          }
+        }
+        }
+       return state;
+     })
+     .addCase(webSocketTypingEnded,(state,{payload : {publicKey}})=>
+      {
+        const token=localStorage.getItem("token");
+        console.log("typing ended");
+        if(!token) return;
+        if (state.chats[publicKey].isTyping===true)
+          {
+            return {
+              chatMessages:{
+                ...state.chatMessages,
+              },
+              chats:{
+                ...state.chats,
+                [publicKey] : {
+                  last_message:state.chats[publicKey].last_message,
+                  lastMessageId:state.chats[publicKey].lastMessageId,
+                  isTyping:false
+                }
+              },
+              isFetchingChats: {
+                ...state.isFetchingChats,
+              }
+            }
+          }
+        return state;
+      }
+    )
+    //.addCase(webSocketRecieveTyping,(state, {payload})))
+    // .addCase(webSocketReceiveTyping, (state , { payload : { publicKey } } ) = > {
+    //   const token=localStorage.getItem("token");
+    //   if (!token) return;
+    //   is (state.chats[publicKey]!==undefined && state.chats[publicKey]) {
+    //     return {
+    //       chatMessages: {
+    //         ...state.chatMessages,
+    //       },
+    //       chats: {
+    //         ...state.chats,
+    //         [userId]: {
+    //           isTyping: true,
+    //         },
+    //       },
+    //       isFetchingChats: {
+    //         ...state.isFetchingChats,
+    //         [userId]: {
+    //           isFecthing: false,
+    //         },
+    //       },
+    //     }
+    //   }
+    // })
 );
 
 /*
@@ -343,7 +447,15 @@ export const websocketMiddleware: Middleware = (store) => {
           })
         );
         break;
-      case "typing":
+      case "TYPING":
+        console.log("Case typing");
+        console.log(JSON.parse(event.data).from);
+        store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));
+        // store.dispatch(
+        //   webSocketReceiveTyping({
+        //     publicKey: JSON.parse(event.data).from,
+        //   })
+        // )
 
       default:
         console.log("Invalid Message type");
@@ -357,7 +469,7 @@ export const websocketMiddleware: Middleware = (store) => {
           if (socket !== null) {
             socket.close();
           }
-          socket = new WebSocket("ws://127.0.0.1:3011/ws");
+          socket = new WebSocket("ws://172.18.203.111:3011/ws");
 
           socket.onopen = onOpen(store);
           socket.onmessage = onMessage(store);

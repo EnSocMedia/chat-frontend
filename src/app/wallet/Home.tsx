@@ -6,12 +6,15 @@ import Image from 'next/image';
 import img1 from './Home.jpg';
 import Footer from './footer';
 import History from './history';
-import Cards from './cards';
+import Cards from './cards'; // Import the new component
+import QRCodePopup from '@/components/QrCode';
+import TransactionPopup from '@/components/Transaction';
 
 // Define the MyComponent
 const MyComponent = () => {
   // State to manage the visibility of the QR code popup and QR data
   const [showQRPopup, setShowQRPopup] = useState(false);
+  const [sendTran,setSendTran]=useState(false);
   const [qrData, setQRData] = useState('');
 
   // Function to generate random string and update QR data
@@ -21,10 +24,18 @@ const MyComponent = () => {
     setShowQRPopup(true);
   };
 
+  const showSendTransaction = () => {
+    setSendTran(true);
+  }
+
   // Function to close the QR popup
   const closeQRPopup = () => {
     setShowQRPopup(false);
   };
+
+  const closeTransactionPopup = () => {
+    setSendTran(false);
+  }
 
   return (
     <div className="grid min-h-[140px] w-full place-items-center overflow-x-scroll rounded-lg p-9 lg:overflow-visible">
@@ -54,8 +65,12 @@ const MyComponent = () => {
                 Deposit
               </button>
               {/* Withdraw button */}
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <button className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Withdraw
+              </button>
+              {/* Send button */}
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={showSendTransaction}>
+                Send
               </button>
             </div>
             {/* History component */}
@@ -68,35 +83,9 @@ const MyComponent = () => {
 
       {/* QR Code Popup */}
       {/* Render popup if showQRPopup is true */}
-      {showQRPopup && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-8 rounded-lg relative">
-      {/* Close button */}
-      <button 
-        className="absolute top-0 right-0 p-2 text-gray-600 hover:text-gray-900" 
-        onClick={closeQRPopup}
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          className="h-6 w-6" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M6 18L18 6M6 6l12 12" 
-          />
-        </svg>
-      </button>
-      {/* Render QR code with qrData */}
-      <QRCode value={qrData} />
-    </div>
-  </div>
-)}
-
+      {!sendTran && showQRPopup && <QRCodePopup qrData={qrData} closeQRPopup={closeQRPopup} />}
+      {sendTran && <TransactionPopup closeTransactionPopup={closeTransactionPopup}/>}
+      {/*sendTran && </>*/}
       {/* Footer component */}
       <Footer />
     </div>
