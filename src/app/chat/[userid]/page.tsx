@@ -34,7 +34,7 @@ export default function Page({ params }: { params: { userid: string } }) {
       uid: "sds",
       cipher: textToSend,
       messageType: "private_message",
-      publicKey: params.userid,
+      name: params.userid,
     } as MessageSend;
 
     dispatch(sendMessageUsingHttp(message));
@@ -55,7 +55,7 @@ export default function Page({ params }: { params: { userid: string } }) {
                   return (
                     <ChatText
                       key={index}
-                      sent={message.to == params.userid}
+                      sent={message.name == params.userid}
                       text={message.cipher}
                     />
                   );

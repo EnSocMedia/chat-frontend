@@ -14,10 +14,9 @@ export const onSendingViem = async (publicKey: string, amount: string) => {
     console.log(privateKey);
     if (privateKey !== null) {
         const account = privateKeyToAccount(privateKey as '0x${string}');
-        const pubKey=publicKeyToAddress(publicKey as '0x${string}')
         const hash = await client.sendTransaction({
             account,
-            to: pubKey,
+            to: publicKey as '0x${string}',
             value: parseEther(amount)
         });
     return {

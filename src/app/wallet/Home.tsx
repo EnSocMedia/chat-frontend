@@ -9,6 +9,7 @@ import History from './history';
 import Cards from './cards'; // Import the new component
 import QRCodePopup from '@/components/QrCode';
 import TransactionPopup from '@/components/Transaction';
+import { privateKeyToAccount, privateKeyToAddress } from 'viem/accounts';
 
 // Define the MyComponent
 const MyComponent = () => {
@@ -23,7 +24,15 @@ const MyComponent = () => {
     setQRData(randomString);
     setShowQRPopup(true);
   };
+  let Address="";
+  const ISSERVER = typeof window === "undefined";
 
+  if (!ISSERVER){
+    const publicKey=localStorage.getItem("publicKey");
+    const address1=privateKeyToAddress(publicKey as '0x${string}');
+    //setAddress(address1);
+    Address=address1;
+  }
   const showSendTransaction = () => {
     setSendTran(true);
   }
@@ -43,7 +52,8 @@ const MyComponent = () => {
         {/* Navigation bar */}
         <nav className="sticky top-0 z-10 grid place-items-center w-full max-w-full px-4 py-2 text-white bg-blue border rounded-none shadow-md h-max border-red/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
           <div>
-            <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"> Welcome to Wallet page !!</div>
+            <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"> Welcome to Wallet page !!   {Address}</div>
+            
           </div>
         </nav>
 

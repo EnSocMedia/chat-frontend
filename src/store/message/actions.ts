@@ -5,7 +5,7 @@ export interface MessageSend {
   uid: string;
   messageType: string;
   cipher: string;
-  publicKey: string;
+  name: string;
 }
 
 /*
@@ -17,7 +17,7 @@ export const sendMessageUsingHttp = createAsyncThunk(
     
     const token = localStorage.getItem("token");
     const publicKey = localStorage.getItem("publicKey");
-    const req = await fetch("http://localhost:3011/sendMessage", {
+    const req = await fetch("http://172.18.203.111:3011/sendMessage", {
       method: "POST",
       body: JSON.stringify(message),
       headers: {
@@ -32,8 +32,8 @@ export const sendMessageUsingHttp = createAsyncThunk(
       messageId: "sdsdsd",
       messageType: "private_message",
       id:'efgrsdgv',
-      name:'Athul',
-      to:message.publicKey,
+      name:message.name,
+      to:'athul',
       uid:'sdsds'
     } as Message;
   }
@@ -47,7 +47,7 @@ export const getMessagesUsingUserId = createAsyncThunk(
   async (data: any, thunkAPI) => {
     const { userId, limit = 50, before, after } = data;
     const token = localStorage.getItem("token");
-    let url = `http://localhost:3011/user/${userId}/messages?limit=${limit}`;
+    let url = `http://172.18.203.111:3011/user/${userId}/messages?limit=${limit}`;
     if (before) {
       url = url + `&before=${before}`;
     } else if (after) {
@@ -73,7 +73,7 @@ export const getMessagesOnBootstrap = createAsyncThunk(
   "messages/messagesOnBootstrap",
   async (thunkAPI) => {
     const token = localStorage.getItem("token");
-    let url = `http://localhost:3011/messages/getMessagesOnBootstrap`;
+    let url = `http://172.18.203.111:3011/messages/getMessagesOnBootstrap`;
     const req = await fetch(url, {
       headers: {
         AUTHENTICATION: token!,
