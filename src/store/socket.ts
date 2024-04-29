@@ -469,7 +469,7 @@ export const websocketMiddleware: Middleware = (store) => {
           if (socket !== null) {
             socket.close();
           }
-          socket = new WebSocket("ws://172.18.203.111:3011/ws");
+          socket = new WebSocket("ws://127.0.0.1:3011/ws");
 
           socket.onopen = onOpen(store);
           socket.onmessage = onMessage(store);

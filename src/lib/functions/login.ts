@@ -22,7 +22,7 @@ export const onLogin = async (privateKey: Uint8Array) => {
     message: msg,
   };
 
-  const req = await fetch("http://172.18.203.111:3011/login", {
+  const req = await fetch("http://localhost:3011/login", {
     method: "POST",
     body: JSON.stringify(sendObj),
     headers: {
