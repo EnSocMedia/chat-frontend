@@ -14,20 +14,41 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
     const [amount, setAmount] = useState<string>("");
     const {onSendViem,onSendRawTransaction } = useTransaction();
     const [selectedOption, setSelectedOption] = useState<string>("option1");
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [isLoading, setIsLoading]= useState(false);
 
-  const handleConfirm = () => {
-    console.log("Clicked button");
-    onSendViem(publicKey, amount);
-    closeTransactionPopup();
-  };
+
+    const handleConfirm = () => {
+      setIsLoading(true);
+      setErrors({});
+      let formIsValid = true;
+    if (publicKey.length != 42) {
+      setErrors((prevErrors) => ({ ...prevErrors, publicKey: "Public Key is incorrect" }));
+      formIsValid = false;
+    }    
+    if (!amount.trim()) {
+      setErrors((prevErrors) => ({ ...prevErrors, amount: "Amount is required" }));
+      formIsValid = false;
+    }
+      if (formIsValid){
+      if (selectedOption === "option1") {
+        onSendViem(publicKey, amount);
+      } else {
+        console.log("option2");
+        onSendRawTransaction(publicKey, amount);
+      }
+      setIsLoading(false);
+    }
+    setIsLoading(false);
+    };
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-11 rounded-lg relative w-96">
         {/* Close button */}
         <button 
           className="absolute top-0 right-0 p-2 text-gray-600 hover:text-gray-900" 
           onClick={closeTransactionPopup}
-        >s
+        >
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
             className="h-6 w-6" 
@@ -55,6 +76,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
           />
+          {errors.publicKey && <p className="text-red-500 text-xs italic">{errors.publicKey}</p>}
         </div>
         {/* Amount input */}
         <div className="mb-6">
@@ -67,6 +89,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
+          {errors.amount && <p className="text-red-500 text-xs italic">{errors.amount}</p>}
         </div>
         <div className="mb-6 flex justify-between">
           <div>
@@ -94,13 +117,13 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
         </div>
         {/* Confirm button */}
         <div className="flex justify-center">
-        <button
+        { !isLoading ? <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="button"
           onClick={handleConfirm}
         >
           Send
-        </button>
+        </button> : <div className='loader'></div>}
         </div>
       </div>
     </div>

@@ -15,13 +15,15 @@ export const onsendingRawTransaction = async (
 
     const privateKey = localStorage.getItem("privateKey");
     if (privateKey !== null) {
+        console.log("Raw transaction");
         const account = privateKeyToAccount(privateKey as "0x${string}");
-        const pubKey = publicKeyToAddress(publicKey as "0x${string}");
         const request = await client.prepareTransactionRequest({
             account,
-            to: pubKey,
+            to: publicKey as '0x${string}',
             value: parseEther(amount),
         });
+
+        console.log("Created request");
         const signature = await client.signTransaction(request);
 
         const data={

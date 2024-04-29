@@ -96,25 +96,25 @@ export default function Layout({
           </div>
           <div className="p-4 overflow-y-auto overflow-x-hidden h-[60vh] border-b border-gray-40 ">
             <ul>
-              {Object.entries(chats).map(([publicKey, chat]) => {
+              {Object.entries(chats).map(([name, chat]) => {
                 let isTyping=false;
                 if (chat) {
                   isTyping = chat.isTyping;
                 }
                 return (
-                  <div key={publicKey}>
+                  <div key={name}>
                     <div className="rounded-none border-b-2 border-[#30323E] p-y-2 ">
                       <li
                         className="py-4"
                         onClick={() => {
-                          router.push(`/chat/${publicKey}`);
+                          router.push(`/chat/${name}`);
                         }}
                       >
                         <div className="flex items-center user-item cursor-pointer">
                           <div>
                             <h3 className="text-white-800 font-semibold flex flex-col">
                               <span>User</span>
-                              <span className="break-all">{publicKey}</span>
+                              <span className="break-all">{name}</span>
                             </h3>
                             {isTyping ? <p className="text-green-500">...Typing</p> :
                             <p className="text-white-600 text-sm">

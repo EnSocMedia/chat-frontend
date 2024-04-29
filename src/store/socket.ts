@@ -16,7 +16,7 @@ import {
 } from "./message/actions";
 
 export interface Chats {
-  [public_key: string]: {
+  [name: string]: {
     last_message: string;
     lastMessageId: string;
     isTyping:boolean;
@@ -24,7 +24,7 @@ export interface Chats {
 }
 
 export interface ChatMessage {
-  [public_key: string]: {
+  [name: string]: {
     messages: Message[];
     lastTimeStamp: number;
     lastMessageId: string;
@@ -35,7 +35,7 @@ export interface Messages {
   chats: Chats;
   chatMessages: ChatMessage;
   isFetchingChats: {
-    [public_key: string]: {
+    [name: string]: {
       isFecthing: boolean;
     };
   };
@@ -48,10 +48,10 @@ const webSocketReceiveMessage = createAction<{
   message: Message;
 }>("Receive Websocket Message");
 const webSocketReceiveTyping = createAction<{
-  publicKey: string;
+  name: string;
 }>("Receive Typing info");
 const webSocketTypingEnded = createAction<{
-  publicKey:string;
+  name:string;
 }>("Ended Typing");
 
 const initialState: Messages = {
@@ -67,9 +67,9 @@ const initialState: Messages = {
 //   }, 3000);
 // };
 
-const receiveTypingWithTimeout = (publicKey: string) => (dispatch) => {
-  dispatch(webSocketReceiveTyping({publicKey:publicKey}));
-  setTimeout(() => dispatch(webSocketTypingEnded({publicKey: publicKey})), 3000);
+const receiveTypingWithTimeout = (name: string) => (dispatch) => {
+  dispatch(webSocketReceiveTyping({name:name}));
+  setTimeout(() => dispatch(webSocketTypingEnded({name: name})), 3000);
 };
 
 
@@ -95,6 +95,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       if (public_key == sender_key) {
         sender_key = message.to;
       }
+      sender_key=message.name;
       const prevMessages = state.chatMessages[sender_key]
         ? state.chatMessages[sender_key].messages
         : [];
@@ -279,6 +280,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         if (public_key == sender_key) {
           sender_key = message.to;
         }
+        sender_key=message.name;
         const prevMessageForThisChat =
           foo.chatMessages && foo.chatMessages[sender_key] !== undefined
             ? foo.chatMessages[sender_key].messages
@@ -302,11 +304,11 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       const message = action.payload;
 
 
-      if (state.chatMessages[message.to] === undefined) {
+      if (state.chatMessages[message.name] === undefined) {
         return {
           chatMessages: {
             ...state.chatMessages,
-            [message.to]: {
+            [message.name]: {
               messages: [message],
               lastMessageId: message.messageId,
               lastTimeStamp: message.time,
@@ -314,7 +316,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           },
           chats: {
             ...state.chats,
-            [message.to]: {
+            [message.name]: {
               last_message: message.cipher,
               lastMessageId: message.messageId,
               isTyping: false,
@@ -322,37 +324,37 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           },
           isFetchingChats: {
             ...state.isFetchingChats,
-            [message.to]: {
+            [message.name]: {
               isFecthing: false,
             },
           },
         };
       }
-      state.chatMessages[message.to].messages.unshift(message);
-      state.chatMessages[message.to].lastTimeStamp = message.time;
-      state.chatMessages[message.to].lastMessageId = message.messageId;
-      state.chats[message.to].last_message = message.cipher;
-      state.chats[message.to].lastMessageId = message.messageId;
+      state.chatMessages[message.name].messages.unshift(message);
+      state.chatMessages[message.name].lastTimeStamp = message.time;
+      state.chatMessages[message.name].lastMessageId = message.messageId;
+      state.chats[message.name].last_message = message.cipher;
+      state.chats[message.name].lastMessageId = message.messageId;
 
       console.log("UPDATE");
     })
-    .addCase(webSocketReceiveTyping, (state , { payload : { publicKey } }) => {
+    .addCase(webSocketReceiveTyping, (state , { payload : { name } }) => {
        const token = localStorage.getItem("token");
        if (!token) return;
        console.log("called");
-       console.log(state.chats[publicKey].isTyping);
-       if (state.chats[publicKey])
+       console.log(state.chats[name].isTyping);
+       if (state.chats[name])
         {
-          if (state.chats[publicKey].isTyping===false){
+          if (state.chats[name].isTyping===false){
           return {
             chatMessages: {
               ...state.chatMessages
             },
             chats: {
               ...state.chats,
-              [publicKey]:{
-                last_message:state.chats[publicKey].last_message,
-                lastMessageId:state.chats[publicKey].lastMessageId,
+              [name]:{
+                last_message:state.chats[name].last_message,
+                lastMessageId:state.chats[name].lastMessageId,
                 isTyping: true,
               }
             },
@@ -365,12 +367,13 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         }
        return state;
      })
-     .addCase(webSocketTypingEnded,(state,{payload : {publicKey}})=>
+     .addCase(webSocketTypingEnded,(state,{payload : {name}})=>
       {
         const token=localStorage.getItem("token");
         console.log("typing ended");
         if(!token) return;
-        if (state.chats[publicKey].isTyping===true)
+        if (!state.chats[name]) return state;
+        if (state.chats[name].isTyping===true)
           {
             return {
               chatMessages:{
@@ -378,9 +381,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               },
               chats:{
                 ...state.chats,
-                [publicKey] : {
-                  last_message:state.chats[publicKey].last_message,
-                  lastMessageId:state.chats[publicKey].lastMessageId,
+                [name] : {
+                  last_message:state.chats[name].last_message,
+                  lastMessageId:state.chats[name].lastMessageId,
                   isTyping:false
                 }
               },
@@ -450,7 +453,7 @@ export const websocketMiddleware: Middleware = (store) => {
       case "TYPING":
         console.log("Case typing");
         console.log(JSON.parse(event.data).from);
-        store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));
+        store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).name));
         // store.dispatch(
         //   webSocketReceiveTyping({
         //     publicKey: JSON.parse(event.data).from,
