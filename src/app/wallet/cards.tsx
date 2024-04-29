@@ -1,15 +1,18 @@
 import React from 'react';
-
+import Image from 'next/image';
+import Eth from "./4x/Eth@4x.png"
+import bitcoinpic from "./4x/Asset 1@4x.png"
 const Cards = () => {
     return (
-        <div className="max-h-[340px] overflow-y-auto grid grid-rows-1  grid-flow-col gap-2 p-4">
+        <div className="max-h-[310px] overflow-y-auto grid grid-rows-1  grid-flow-col gap-2 p-4">
         <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
               
           <a href="#">
-            <img
-              className="p-8 rounded-t-lg"
-              src="/docs/images/products/apple-watch.png"
+            <Image
+              className="p-5 rounded-t-lg"
+              src={bitcoinpic}
               alt="product image"
+              style={{ width: '250px', height: '200px' }}
             />
           </a>
           <div className="px-5 pb-5">
@@ -35,10 +38,11 @@ const Cards = () => {
 
         <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
           <a href="#">
-            <img
-              className="p-8 rounded-t-lg"
-              src="/docs/images/products/apple-watch.png"
+          <Image
+              className="p-5 rounded-t-lg"
+              src={Eth}
               alt="product image"
+              style={{ width: '250px', height: '200px' }}
             />
           </a>
           <div className="px-5 pb-5">

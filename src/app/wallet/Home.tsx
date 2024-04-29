@@ -52,8 +52,7 @@ const MyComponent = () => {
         {/* Navigation bar */}
         <nav className="sticky top-0 z-10 grid place-items-center w-full max-w-full px-4 py-2 text-white bg-blue border rounded-none shadow-md h-max border-red/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
           <div>
-            <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"> Welcome to Wallet page !!   {Address}</div>
-            
+            <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"> Welcome to Wallet page !!    {Address}</div>
           </div>
         </nav>
 
@@ -63,7 +62,7 @@ const MyComponent = () => {
             <Image
               src={img1}
               alt="nature"
-              className="h-[32rem] w-full object-cover object-center"
+              className="h-[36rem] w-full object-cover object-center"
             />
           </div>
 
