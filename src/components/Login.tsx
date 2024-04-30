@@ -1,5 +1,8 @@
+/* eslint-disable react/no-unescaped-entities */
 import { sha256 } from "@noble/hashes/sha256";
 import { useState } from "react";
+import Image from "next/image";
+import login from "./img/Login.png"
 
 interface LoginProps {
   onLogin: (privateKey: Uint8Array) => Promise<void>;
@@ -17,11 +20,9 @@ export default function Login({ onLogin, setsignup }: LoginProps) {
 
   return (
     <div className="flex items-center flex-col gap-7">
-      <div className="text-3xl"> Log in to EnSocMedia</div>
+      {/* <div className="text-3xl"> Log in to EnSocMedia</div> */}
       <div className=" flex items-center flex-col border-solid border-4 rounded-lg border-white py-5 px-8">
-        <div className="text-xl text-white text-center">
-          Welcome back! Sign in using your mnemonic words
-        </div>
+        <Image src={login} alt="LoginPic" height={450}/>
         <div className="flex pt-5 pb-5">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -52,15 +53,15 @@ export default function Login({ onLogin, setsignup }: LoginProps) {
         >
           Login
         </button>
-      </div>
       <div className="flex items-center">
         <div className="flex-1 border-t-2 border-white"></div>
         <span className="px-3 text-white">or</span>
         <div className="flex-1 border-t-2 border-white"></div>
       </div>
       <button onClick={setsignup} className="bg-emerald-500 p-4 rounded-md pt">
-        Dont Have a wallet
+        Don't Have a wallet?
       </button>
+      </div>
     </div>
   );
 }
