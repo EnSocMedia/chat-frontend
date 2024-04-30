@@ -20,6 +20,7 @@ export interface Chats {
     last_message: string;
     lastMessageId: string;
     isTyping: boolean;
+    name: string;
   };
 }
 
@@ -88,7 +89,7 @@ export const websocketSlice = createReducer<Messages>(
   (builder) =>
     builder
       .addCase(webSocketReceiveMessage, (state, { payload: { message } }) => {
-        console.log("Socket Message is",message)
+        console.log("Socket Message is", message);
         const token = localStorage.getItem("token");
         if (!token) return;
         const { public_key } = parseJwt(token);
@@ -124,6 +125,7 @@ export const websocketSlice = createReducer<Messages>(
             ...state.chats,
             [sender_key]: {
               last_message: message.cipher,
+              name: message.name,
               lastMessageId: message.id,
               isTyping: false,
             },
@@ -193,6 +195,10 @@ export const websocketSlice = createReducer<Messages>(
                     ? newMessages[newMessages.length - 1].cipher
                     : state.chats[userId].lastMessageId,
                 isTyping: false,
+                name:
+                  newMessages.length > 0
+                    ? newMessages[0].name
+                    : state.chats[userId].name,
               },
             },
             isFetchingChats: {
@@ -231,6 +237,7 @@ export const websocketSlice = createReducer<Messages>(
                     ? newMessages[newMessages.length - 1].cipher
                     : "",
                 isTyping: false,
+                name: newMessages.length > 0 ? newMessages[0].name : "",
               },
             },
             isFetchingChats: {
@@ -295,6 +302,7 @@ export const websocketSlice = createReducer<Messages>(
             last_message: message.cipher,
             lastMessageId: message.messageId,
             isTyping: false,
+            name: message.name,
           };
         });
         console.log(foo);
@@ -319,6 +327,7 @@ export const websocketSlice = createReducer<Messages>(
                 last_message: message.cipher,
                 lastMessageId: message.id,
                 isTyping: false,
+                name: message.name,
               },
             },
             isFetchingChats: {
@@ -348,6 +357,7 @@ export const websocketSlice = createReducer<Messages>(
               chats: {
                 ...state.chats,
                 [name]: {
+                  ...state.chats[name],
                   last_message: state.chats[name].last_message,
                   lastMessageId: state.chats[name].lastMessageId,
                   isTyping: true,
@@ -374,6 +384,7 @@ export const websocketSlice = createReducer<Messages>(
             chats: {
               ...state.chats,
               [name]: {
+                ...state.chats[name],
                 last_message: state.chats[name].last_message,
                 lastMessageId: state.chats[name].lastMessageId,
                 isTyping: false,

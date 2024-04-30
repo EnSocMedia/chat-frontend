@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { makeStore, AppStore } from "@/store/store";
-import { getPastMessagesUsingLastTimestamp } from "@/store/message/actions";
+
 
 export default function StoreProvider({
   children,

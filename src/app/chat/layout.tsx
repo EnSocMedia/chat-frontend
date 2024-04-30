@@ -75,7 +75,7 @@ export default function Layout({
                           <div>
                             <h3 className="text-white-800 font-semibold flex flex-col">
                               <span>User</span>
-                              <span className="break-all">{name}</span>
+                              <span className="break-all">{chat.name}</span>
                             </h3>
                             {isTyping ? (
                               <p className="text-green-500">...Typing</p>
