@@ -1,23 +1,17 @@
-import { Message } from "@/types/message";
+import { ClientMessage, Message } from "@/types/message";
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 
-export interface MessageSend {
-  uid: string;
-  messageType: string;
-  cipher: string;
-  name: string;
-}
 
 /*
 Send Message Over HTTP
 */
 export const sendMessageUsingHttp = createAsyncThunk(
   "messages/sendMessage",
-  async (message: MessageSend, thunkAPI) => {
-    
+  async (message: ClientMessage, thunkAPI) => {
     const token = localStorage.getItem("token");
     const publicKey = localStorage.getItem("publicKey");
-    const req = await fetch("http://172.18.203.111:3011/sendMessage", {
+    console.log("URL is", process.env.SERVER_URL);
+    const req = await fetch(`http://localhost:3011/sendMessage`, {
       method: "POST",
       body: JSON.stringify(message),
       headers: {
@@ -25,16 +19,18 @@ export const sendMessageUsingHttp = createAsyncThunk(
         AUTHENTICATION: token ?? "",
       },
     });
+
+    //Insert this into pending queue
     return {
+      id: "sd",
       cipher: message.cipher,
       from: publicKey,
-      time: 23523445,
-      messageId: "sdsdsd",
       messageType: "private_message",
-      id:'efgrsdgv',
-      name:message.name,
-      to:'athul',
-      uid:'sdsds'
+      name: "Athul",
+      status: "Sent",
+      time: new Date().getTime(),
+      to: message.to,
+      messageId: message.messageId,
     } as Message;
   }
 );
@@ -47,7 +43,8 @@ export const getMessagesUsingUserId = createAsyncThunk(
   async (data: any, thunkAPI) => {
     const { userId, limit = 50, before, after } = data;
     const token = localStorage.getItem("token");
-    let url = `http://172.18.203.111:3011/user/${userId}/messages?limit=${limit}`;
+    let proce;
+    let url = `${process.env.SERVER_URL}/user/${userId}/messages?limit=${limit}`;
     if (before) {
       url = url + `&before=${before}`;
     } else if (after) {
@@ -73,7 +70,7 @@ export const getMessagesOnBootstrap = createAsyncThunk(
   "messages/messagesOnBootstrap",
   async (thunkAPI) => {
     const token = localStorage.getItem("token");
-    let url = `http://172.18.203.111:3011/messages/getMessagesOnBootstrap`;
+    let url = `http://localhost:3011/messages/getMessagesOnBootstrap`;
     const req = await fetch(url, {
       headers: {
         AUTHENTICATION: token!,

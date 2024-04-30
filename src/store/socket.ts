@@ -1,4 +1,4 @@
-import { Message } from "@/types/message";
+import { Message, RecieverMessage } from "@/types/message";
 import {
   Action,
   Dispatch,
@@ -16,15 +16,15 @@ import {
 } from "./message/actions";
 
 export interface Chats {
-  [name: string]: {
+  [publicKey: string]: {
     last_message: string;
     lastMessageId: string;
-    isTyping:boolean;
+    isTyping: boolean;
   };
 }
 
 export interface ChatMessage {
-  [name: string]: {
+  [publicKey: string]: {
     messages: Message[];
     lastTimeStamp: number;
     lastMessageId: string;
@@ -35,7 +35,7 @@ export interface Messages {
   chats: Chats;
   chatMessages: ChatMessage;
   isFetchingChats: {
-    [name: string]: {
+    [publicKey: string]: {
       isFecthing: boolean;
     };
   };
@@ -45,13 +45,13 @@ export interface Messages {
 const websocketConnect = () => ({ type: "WEBSOCKET_CONNECT" });
 const websocketSendMessage = () => ({ type: "SEND_MESSAGE" });
 const webSocketReceiveMessage = createAction<{
-  message: Message;
+  message: RecieverMessage;
 }>("Receive Websocket Message");
 const webSocketReceiveTyping = createAction<{
   name: string;
 }>("Receive Typing info");
 const webSocketTypingEnded = createAction<{
-  name:string;
+  name: string;
 }>("Ended Typing");
 
 const initialState: Messages = {
@@ -60,18 +60,16 @@ const initialState: Messages = {
   isFetchingChats: {},
 };
 
-
 // export const handleTypingTimeout = (publicKey: string) => () => {
 //   setTimeout(() => {
 //     store.dispatch(webSocketTypingEnded({ publicKey }));
 //   }, 3000);
 // };
 
-const receiveTypingWithTimeout = (name: string) => (dispatch) => {
-  dispatch(webSocketReceiveTyping({name:name}));
-  setTimeout(() => dispatch(webSocketTypingEnded({name: name})), 3000);
+const receiveTypingWithTimeout = (name: string) => (dispatch: any) => {
+  dispatch(webSocketReceiveTyping({ name: name }));
+  setTimeout(() => dispatch(webSocketTypingEnded({ name: name })), 3000);
 };
-
 
 export function parseJwt(token: string) {
   if (!token) {
@@ -85,340 +83,333 @@ export function parseJwt(token: string) {
 /* 
   Reducer for websocket actions
 */
-export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
-  builder
-    .addCase(webSocketReceiveMessage, (state, { payload: { message } }) => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      const { public_key } = parseJwt(token);
-      let sender_key = message.from;
-      if (public_key == sender_key) {
-        sender_key = message.to;
-      }
-      sender_key=message.name;
-      const prevMessages = state.chatMessages[sender_key]
-        ? state.chatMessages[sender_key].messages
-        : [];
+export const websocketSlice = createReducer<Messages>(
+  initialState,
+  (builder) =>
+    builder
+      .addCase(webSocketReceiveMessage, (state, { payload: { message } }) => {
+        console.log("Socket Message is",message)
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const { public_key } = parseJwt(token);
 
-      //If the message is already in the state discard it
-      const messageAlreadyExist = prevMessages.some(
-        (m) => m.messageId == message.messageId
-      );
-
-      if (messageAlreadyExist) return;
-
-      //TODO: Sort the messages according to timestamp
-      //Whenever a new message comes
-
-      return {
-        chatMessages: {
-          ...state.chatMessages,
-          [sender_key]: {
-            messages: [message, ...prevMessages],
-            lastTimeStamp: message.time,
-            lastMessageId: message.messageId,
-          },
-        },
-        chats: {
-          ...state.chats,
-          [sender_key]: {
-            last_message: message.cipher,
-            lastMessageId: message.messageId,
-            isTyping: false,
-          },
-        },
-        isFetchingChats: {
-          ...state.isFetchingChats,
-          [sender_key]: {
-            isFecthing: false,
-          },
-        },
-      };
-    })
-    .addCase(getMessagesUsingUserId.fulfilled, (state, action) => {
-      const messages = action.payload.messages;
-      const { userId } = action.meta.arg as { userId: string };
-
-      //TODO: Sort the messages according to timestamp
-      //Whenever a new message comes
-
-      //Get the Previous message of the same chatId using UserId
-      const prevMessages = state.chatMessages[userId]
-        ? state.chatMessages[userId].messages
-        : [];
-
-      //Check if the message is already in the state
-      const newMessages = messages.filter((message) => {
-        if (
-          prevMessages.some(
-            (prevMessage) => prevMessage.messageId === message.messageId
-          )
-        ) {
-          return false;
-        }
-
-        return true;
-      });
-
-      if (
-        state.chats[userId] !== undefined &&
-        state.chatMessages[userId] &&
-        state.chatMessages[userId].messages
-      ) {
-        return {
-          chatMessages: {
-            ...state.chatMessages,
-            [userId]: {
-              messages: [...prevMessages, ...newMessages],
-              lastTimeStamp:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].time
-                  : state.chatMessages[userId].lastTimeStamp,
-              lastMessageId:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].messageId
-                  : state.chatMessages[userId].lastMessageId,
-            },
-          },
-          chats: {
-            ...state.chats,
-            [userId]: {
-              last_message:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].cipher
-                  : state.chats[userId].last_message,
-              lastMessageId:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].cipher
-                  : state.chats[userId].lastMessageId,
-              isTyping: false,
-            },
-          },
-          isFetchingChats: {
-            ...state.isFetchingChats,
-            [userId]: {
-              isFecthing: false,
-            },
-          },
-        };
-      } else {
-        const hasMessage = newMessages.length > 0;
-        return {
-          chatMessages: {
-            ...state.chatMessages,
-            [userId]: {
-              messages: [...newMessages],
-              lastTimeStamp:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].time
-                  : 0,
-              lastMessageId:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].messageId
-                  : "",
-            },
-          },
-          chats: {
-            ...state.chats,
-            [userId]: {
-              last_message:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].cipher
-                  : "",
-              lastMessageId:
-                newMessages.length > 0
-                  ? newMessages[newMessages.length - 1].cipher
-                  : "",
-              isTyping : false,
-            },
-          },
-          isFetchingChats: {
-            ...state.isFetchingChats,
-            [userId]: {
-              isFecthing: false,
-            },
-          },
-        };
-      }
-    })
-    .addCase(getMessagesUsingUserId.pending, (state, action) => {
-      const { userId } = action.meta.arg as { userId: string };
-
-      return {
-        chatMessages: {
-          ...state.chatMessages,
-        },
-        chats: {
-          ...state.chats,
-          [userId]: {
-            ...state.chats[userId],
-          },
-        },
-        isFetchingChats: {
-          ...state.isFetchingChats,
-          [userId]: {
-            isFecthing: false,
-          },
-        },
-      };
-    })
-    .addCase(getMessagesOnBootstrap.fulfilled, (state, action) => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      const { public_key } = parseJwt(token);
-      const messages = action.payload.messages;
-      console.log("MESSAGES ON BOOTSTRAP", messages);
-
-      let foo = {
-        chatMessages: {},
-        chats: {},
-        isFetchingChats: {},
-      } as Messages;
-
-      messages.forEach((message) => {
         let sender_key = message.from;
+
         if (public_key == sender_key) {
           sender_key = message.to;
         }
-        sender_key=message.name;
-        const prevMessageForThisChat =
-          foo.chatMessages && foo.chatMessages[sender_key] !== undefined
-            ? foo.chatMessages[sender_key].messages
-            : [];
-        foo.chatMessages[sender_key] = {
-          messages: [...prevMessageForThisChat, message],
-          lastMessageId: message.messageId,
-          lastTimeStamp: message.time,
-        };
+        const prevMessages = state.chatMessages[sender_key]
+          ? state.chatMessages[sender_key].messages
+          : [];
 
-        foo.chats[sender_key] = {
-          last_message: message.cipher,
-          lastMessageId: message.messageId,
-          isTyping: false
-        };
-      });
+        //If the message is already in the state discard it
+        const messageAlreadyExist = prevMessages.some(
+          (m) => m.id == message.id
+        );
 
-      return foo;
-    })
-    .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
-      const message = action.payload;
+        if (messageAlreadyExist) return;
 
-
-      if (state.chatMessages[message.name] === undefined) {
+        //TODO: Sort the messages according to timestamp
+        //Whenever a new message comes
         return {
           chatMessages: {
             ...state.chatMessages,
-            [message.name]: {
-              messages: [message],
-              lastMessageId: message.messageId,
+            [sender_key]: {
+              messages: [message, ...prevMessages],
               lastTimeStamp: message.time,
+              lastMessageId: message.id,
             },
           },
           chats: {
             ...state.chats,
-            [message.name]: {
+            [sender_key]: {
               last_message: message.cipher,
-              lastMessageId: message.messageId,
+              lastMessageId: message.id,
               isTyping: false,
             },
           },
           isFetchingChats: {
             ...state.isFetchingChats,
-            [message.name]: {
+            [sender_key]: {
               isFecthing: false,
             },
           },
         };
-      }
-      state.chatMessages[message.name].messages.unshift(message);
-      state.chatMessages[message.name].lastTimeStamp = message.time;
-      state.chatMessages[message.name].lastMessageId = message.messageId;
-      state.chats[message.name].last_message = message.cipher;
-      state.chats[message.name].lastMessageId = message.messageId;
+      })
+      .addCase(getMessagesUsingUserId.fulfilled, (state, action) => {
+        const messages = action.payload.messages;
+        const { userId } = action.meta.arg as { userId: string };
 
-      console.log("UPDATE");
-    })
-    .addCase(webSocketReceiveTyping, (state , { payload : { name } }) => {
-       const token = localStorage.getItem("token");
-       if (!token) return;
-       console.log("called");
-       console.log(state.chats[name].isTyping);
-       if (state.chats[name])
-        {
-          if (state.chats[name].isTyping===false){
+        //TODO: Sort the messages according to timestamp
+        //Whenever a new message comes
+
+        //Get the Previous message of the same chatId using UserId
+        const prevMessages = state.chatMessages[userId]
+          ? state.chatMessages[userId].messages
+          : [];
+
+        //Check if the message is already in the state
+        const newMessages = messages.filter((message) => {
+          if (
+            prevMessages.some(
+              (prevMessage) => prevMessage.messageId === message.messageId
+            )
+          ) {
+            return false;
+          }
+
+          return true;
+        });
+
+        if (
+          state.chats[userId] !== undefined &&
+          state.chatMessages[userId] &&
+          state.chatMessages[userId].messages
+        ) {
           return {
             chatMessages: {
-              ...state.chatMessages
+              ...state.chatMessages,
+              [userId]: {
+                messages: [...prevMessages, ...newMessages],
+                lastTimeStamp:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].time
+                    : state.chatMessages[userId].lastTimeStamp,
+                lastMessageId:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].messageId
+                    : state.chatMessages[userId].lastMessageId,
+              },
             },
             chats: {
               ...state.chats,
-              [name]:{
-                last_message:state.chats[name].last_message,
-                lastMessageId:state.chats[name].lastMessageId,
-                isTyping: true,
-              }
+              [userId]: {
+                last_message:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].cipher
+                    : state.chats[userId].last_message,
+                lastMessageId:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].cipher
+                    : state.chats[userId].lastMessageId,
+                isTyping: false,
+              },
             },
-            isFetchingChats :
-            {
-              ...state.isFetchingChats
-            }
+            isFetchingChats: {
+              ...state.isFetchingChats,
+              [userId]: {
+                isFecthing: false,
+              },
+            },
+          };
+        } else {
+          const hasMessage = newMessages.length > 0;
+          return {
+            chatMessages: {
+              ...state.chatMessages,
+              [userId]: {
+                messages: [...newMessages],
+                lastTimeStamp:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].time
+                    : 0,
+                lastMessageId:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].messageId
+                    : "",
+              },
+            },
+            chats: {
+              ...state.chats,
+              [userId]: {
+                last_message:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].cipher
+                    : "",
+                lastMessageId:
+                  newMessages.length > 0
+                    ? newMessages[newMessages.length - 1].cipher
+                    : "",
+                isTyping: false,
+              },
+            },
+            isFetchingChats: {
+              ...state.isFetchingChats,
+              [userId]: {
+                isFecthing: false,
+              },
+            },
+          };
+        }
+      })
+      .addCase(getMessagesUsingUserId.pending, (state, action) => {
+        const { userId } = action.meta.arg as { userId: string };
+
+        return {
+          chatMessages: {
+            ...state.chatMessages,
+          },
+          chats: {
+            ...state.chats,
+            [userId]: {
+              ...state.chats[userId],
+            },
+          },
+          isFetchingChats: {
+            ...state.isFetchingChats,
+            [userId]: {
+              isFecthing: false,
+            },
+          },
+        };
+      })
+      .addCase(getMessagesOnBootstrap.fulfilled, (state, action) => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const { public_key } = parseJwt(token);
+        const messages = action.payload.messages;
+
+        let foo = {
+          chatMessages: {},
+          chats: {},
+          isFetchingChats: {},
+        } as Messages;
+
+        messages.forEach((message) => {
+          let sender_key = message.from;
+
+          if (public_key == sender_key) {
+            sender_key = message.to;
           }
+          const prevMessageForThisChat =
+            foo.chatMessages && foo.chatMessages[sender_key] !== undefined
+              ? foo.chatMessages[sender_key].messages
+              : [];
+          foo.chatMessages[sender_key] = {
+            messages: [...prevMessageForThisChat, message],
+            lastMessageId: message.messageId,
+            lastTimeStamp: message.time,
+          };
+
+          foo.chats[sender_key] = {
+            last_message: message.cipher,
+            lastMessageId: message.messageId,
+            isTyping: false,
+          };
+        });
+        console.log(foo);
+        return foo;
+      })
+      .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
+        const message = action.payload;
+
+        if (state.chatMessages[message.to] === undefined) {
+          return {
+            chatMessages: {
+              ...state.chatMessages,
+              [message.to]: {
+                messages: [message],
+                lastMessageId: message.id,
+                lastTimeStamp: message.time,
+              },
+            },
+            chats: {
+              ...state.chats,
+              [message.to]: {
+                last_message: message.cipher,
+                lastMessageId: message.id,
+                isTyping: false,
+              },
+            },
+            isFetchingChats: {
+              ...state.isFetchingChats,
+              [message.to]: {
+                isFecthing: false,
+              },
+            },
+          };
         }
-        }
-       return state;
-     })
-     .addCase(webSocketTypingEnded,(state,{payload : {name}})=>
-      {
-        const token=localStorage.getItem("token");
-        console.log("typing ended");
-        if(!token) return;
-        if (!state.chats[name]) return state;
-        if (state.chats[name].isTyping===true)
-          {
+        state.chatMessages[message.to].messages.unshift(message);
+        state.chatMessages[message.to].lastTimeStamp = message.time;
+        state.chatMessages[message.to].lastMessageId = message.id;
+        state.chats[message.to].last_message = message.cipher;
+        state.chats[message.to].lastMessageId = message.id;
+      })
+      .addCase(webSocketReceiveTyping, (state, { payload: { name } }) => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        if (state.chats[name]) {
+          if (state.chats[name].isTyping === false) {
             return {
-              chatMessages:{
+              chatMessages: {
                 ...state.chatMessages,
               },
-              chats:{
+              chats: {
                 ...state.chats,
-                [name] : {
-                  last_message:state.chats[name].last_message,
-                  lastMessageId:state.chats[name].lastMessageId,
-                  isTyping:false
-                }
+                [name]: {
+                  last_message: state.chats[name].last_message,
+                  lastMessageId: state.chats[name].lastMessageId,
+                  isTyping: true,
+                },
               },
               isFetchingChats: {
                 ...state.isFetchingChats,
-              }
-            }
+              },
+            };
           }
+        }
         return state;
-      }
-    )
-    //.addCase(webSocketRecieveTyping,(state, {payload})))
-    // .addCase(webSocketReceiveTyping, (state , { payload : { publicKey } } ) = > {
-    //   const token=localStorage.getItem("token");
-    //   if (!token) return;
-    //   is (state.chats[publicKey]!==undefined && state.chats[publicKey]) {
-    //     return {
-    //       chatMessages: {
-    //         ...state.chatMessages,
-    //       },
-    //       chats: {
-    //         ...state.chats,
-    //         [userId]: {
-    //           isTyping: true,
-    //         },
-    //       },
-    //       isFetchingChats: {
-    //         ...state.isFetchingChats,
-    //         [userId]: {
-    //           isFecthing: false,
-    //         },
-    //       },
-    //     }
-    //   }
-    // })
+      })
+      .addCase(webSocketTypingEnded, (state, { payload: { name } }) => {
+        const token = localStorage.getItem("token");
+        console.log("typing ended");
+        if (!token) return;
+        if (!state.chats[name]) return state;
+        if (state.chats[name].isTyping === true) {
+          return {
+            chatMessages: {
+              ...state.chatMessages,
+            },
+            chats: {
+              ...state.chats,
+              [name]: {
+                last_message: state.chats[name].last_message,
+                lastMessageId: state.chats[name].lastMessageId,
+                isTyping: false,
+              },
+            },
+            isFetchingChats: {
+              ...state.isFetchingChats,
+            },
+          };
+        }
+        return state;
+      })
+  //.addCase(webSocketRecieveTyping,(state, {payload})))
+  // .addCase(webSocketReceiveTyping, (state , { payload : { publicKey } } ) = > {
+  //   const token=localStorage.getItem("token");
+  //   if (!token) return;
+  //   is (state.chats[publicKey]!==undefined && state.chats[publicKey]) {
+  //     return {
+  //       chatMessages: {
+  //         ...state.chatMessages,
+  //       },
+  //       chats: {
+  //         ...state.chats,
+  //         [userId]: {
+  //           isTyping: true,
+  //         },
+  //       },
+  //       isFetchingChats: {
+  //         ...state.isFetchingChats,
+  //         [userId]: {
+  //           isFecthing: false,
+  //         },
+  //       },
+  //     }
+  //   }
+  // })
 );
 
 /*
@@ -439,9 +430,7 @@ export const websocketMiddleware: Middleware = (store) => {
 
   const onMessage = (store: any) => (event: any) => {
     const messsage = event.data;
-    console.log(messsage);
-    const messageType = JSON.parse(messsage).message_type;
-
+    const messageType = JSON.parse(messsage).messageType;
     switch (messageType) {
       case "private_message":
         store.dispatch(
@@ -451,14 +440,7 @@ export const websocketMiddleware: Middleware = (store) => {
         );
         break;
       case "TYPING":
-        console.log("Case typing");
-        console.log(JSON.parse(event.data).from);
-        store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).name));
-        // store.dispatch(
-        //   webSocketReceiveTyping({
-        //     publicKey: JSON.parse(event.data).from,
-        //   })
-        // )
+        store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));
 
       default:
         console.log("Invalid Message type");

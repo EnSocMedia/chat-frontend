@@ -7,12 +7,11 @@ import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
 import sendTypingInfo from "@/services/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  MessageSend,
   getMessagesUsingUserId,
   sendMessageUsingHttp,
 } from "@/store/message/actions";
 import { websocketConnect } from "@/store/socket";
-import { Message } from "@/types/message";
+import { ClientMessage, Message } from "@/types/message";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -24,18 +23,17 @@ export default function Page({ params }: { params: { userid: string } }) {
   const [textToSend, setTextToSend] = useState("");
   const router = useRouter();
 
-  useEffect(()=>{
-    dispatch(websocketConnect())
-  },[])
+  useEffect(() => {
+    dispatch(websocketConnect());
+  }, []);
 
   function messageSendHandler() {
-    const publicKey = localStorage.getItem("publicKey");
     const message = {
-      uid: "sds",
       cipher: textToSend,
       messageType: "private_message",
-      name: params.userid,
-    } as MessageSend;
+      messageId: "SFDSFDS",
+      to: params.userid,
+    } as ClientMessage;
 
     dispatch(sendMessageUsingHttp(message));
     setTextToSend("");
@@ -55,7 +53,7 @@ export default function Page({ params }: { params: { userid: string } }) {
                   return (
                     <ChatText
                       key={index}
-                      sent={message.name == params.userid}
+                      sent={message.to == params.userid}
                       text={message.cipher}
                     />
                   );
