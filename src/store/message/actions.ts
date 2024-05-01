@@ -66,7 +66,7 @@ export const getMessagesOnBootstrap = createAsyncThunk(
   "messages/messagesOnBootstrap",
   async (thunkAPI) => {
     const token = localStorage.getItem("token");
-    let url = `http://localhost:3011/messages/getMessagesOnBootstrap`;
+    let url = `http://172.18.203.111:3011/messages/getMessagesOnBootstrap`;
     const req = await fetch(url, {
       headers: {
         AUTHENTICATION: token!,

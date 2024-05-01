@@ -19,7 +19,7 @@ export const onRegister = async (privateKey: Uint8Array,name:string) => {
     name: name,
   };
 
-  const req = await fetch("http://localhost:3011/signin", {
+  const req = await fetch("http://172.18.203.111:3011/signin", {
     method: "POST",
     body: JSON.stringify(sendObj),
     headers: {

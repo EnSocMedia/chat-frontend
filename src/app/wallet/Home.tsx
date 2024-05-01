@@ -28,10 +28,11 @@ const MyComponent = () => {
   const ISSERVER = typeof window === "undefined";
 
   if (!ISSERVER){
-    const publicKey=localStorage.getItem("publicKey");
-    const address1=privateKeyToAddress(publicKey as '0x${string}');
+    const privateKey=localStorage.getItem("privateKey");
+    console.log(privateKey);
+    //const address1=privateKeyToAddress(privateKey as '0x${string}');
     //setAddress(address1);
-    Address=address1;
+    //Address=address1;
   }
   const showSendTransaction = () => {
     setSendTran(true);

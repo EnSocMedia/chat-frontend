@@ -1,24 +1,35 @@
+import { Hash } from "@noble/hashes/utils";
 import { useEffect, useState } from "react";
-import { createWalletClient, getAddress, http, parseEther } from "viem";
+import { SendRawTransactionParameters, createWalletClient, getAddress, http, parseEther } from "viem";
 import { privateKeyToAccount, publicKeyToAddress } from "viem/accounts";
-import { mainnet } from 'viem/chains';
+import { mainnet, sepolia } from 'viem/chains';
 
-export const onSendingViem = async (publicKey: string, amount: string) => {
+export const onSendingViem = async (address: string, amount: string) => {
     const client = createWalletClient({
-        chain: mainnet,
+        chain: sepolia,
         transport: http()
     })
+
+    console.log("Inside viem");
     
     const privateKey = localStorage.getItem("privateKey");
-    console.log("got privatekey");
-    console.log(privateKey);
     if (privateKey !== null) {
         const account = privateKeyToAccount(privateKey as '0x${string}');
-        const hash = await client.sendTransaction({
+        const request = await client.prepareTransactionRequest({ 
             account,
-            to: publicKey as '0x${string}',
-            value: parseEther(amount)
-        });
+            to: address as '0x${string}',
+            value: parseEther(amount),
+          })
+        console.log(request);
+        const serializedTransaction=await client.signTransaction(request);
+        const hash=await client.sendRawTransaction({ serializedTransaction });
+
+    
+        
+          console.log("FInished transaction");
+    
+  
+        
     return {
         hash: hash as any,
     };
