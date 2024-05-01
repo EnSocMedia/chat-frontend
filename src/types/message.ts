@@ -4,7 +4,8 @@ export interface Message {
   messageId: string; //Message Id
   from: string; // Public Key/Address of the Sender
   to: string; // Public Key/Address of the Receiver
-  name: string; // Name of the Receiver
+  toName: string; // Name of the Receiver
+  fromName: string;
   cipher: string; //Encrypted Message
   messageType: string; // Type of the Messgae
   time: number; //Time at which the Message has been sent
@@ -21,8 +22,6 @@ export interface ClientMessage {
 
 //The type that the Receiver Send to Client
 export type RecieverMessage = Message;
-
-
 
 //Type of the Message
 export enum MessageType {

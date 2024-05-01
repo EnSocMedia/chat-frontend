@@ -74,7 +74,6 @@ export default function Layout({
                         <div className="flex items-center user-item cursor-pointer">
                           <div>
                             <h3 className="text-white-800 font-semibold flex flex-col">
-                              <span>User</span>
                               <span className="break-all">{chat.name}</span>
                             </h3>
                             {isTyping ? (

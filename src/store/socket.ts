@@ -107,6 +107,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         ? state.chatMessages[sender_key].messages
         : [];
 
+      const prevPendingMessage = state.chatMessages[sender_key]
+        ? state.chatMessages[sender_key].pendingMessages
+        : [];
       //If the message is already in the state discard it
       const messageAlreadyExist = prevMessages.some((m) => m.id == message.id);
 
@@ -121,16 +124,14 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             messages: [message, ...prevMessages],
             lastTimeStamp: message.time,
             lastMessageId: message.id,
-            pendingMessages: [
-              ...state.chatMessages[sender_key].pendingMessages,
-            ],
+            pendingMessages: [...prevPendingMessage],
           },
         },
         chats: {
           ...state.chats,
           [sender_key]: {
             last_message: message.cipher,
-            name: message.name,
+            name: message.toName,
             lastMessageId: message.id,
             isTyping: false,
           },
@@ -203,7 +204,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               isTyping: false,
               name:
                 newMessages.length > 0
-                  ? newMessages[0].name
+                  ? newMessages[0].toName
                   : state.chats[userId].name,
             },
           },
@@ -244,7 +245,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
                   ? newMessages[newMessages.length - 1].cipher
                   : "",
               isTyping: false,
-              name: newMessages.length > 0 ? newMessages[0].name : "",
+              name: newMessages.length > 0 ? newMessages[0].toName : "",
             },
           },
           isFetchingChats: {
@@ -310,7 +311,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           last_message: message.cipher,
           lastMessageId: message.messageId,
           isTyping: false,
-          name: message.name,
+          name: message.toName,
         };
       });
       console.log(foo);
@@ -326,7 +327,8 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         cipher: message.cipher,
         from: publicKey,
         messageType: "private_message",
-        name: "Athul",
+        toName: "Athul",
+        fromName:"Rithu",
         status: "Wait",
         time: new Date().getTime(),
         to: message.to,
@@ -360,7 +362,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               last_message: message.cipher,
               lastMessageId: message.id,
               isTyping: false,
-              name: message.name,
+              name: message.toName,
             },
           },
           isFetchingChats: {
@@ -391,7 +393,8 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         cipher: message.cipher,
         from: publicKey,
         messageType: "private_message",
-        name: "Athul",
+        fromName: "Athul",
+        toName: "Rithu",
         status: "Failed",
         time: new Date().getTime(),
         to: message.to,

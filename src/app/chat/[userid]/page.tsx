@@ -21,8 +21,8 @@ import { useDispatch } from "react-redux";
 import { v4 } from "uuid";
 
 function sortByTime(a: Message, b: Message) {
-  if (a.time < b.time) return 1;
-  if (a.time > b.time) return -1;
+  if (a.time > b.time) return 1;
+  if (a.time < b.time) return -1;
 
   return 0;
 }
