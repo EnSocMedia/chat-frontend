@@ -1,9 +1,11 @@
 "use client";
+import ChatDayTime from "@/components/ChatDayTime";
 import ChatText from "@/components/ChatText";
 import Chatnavbar from "@/components/Chatnavbar";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
+import { getDateFromTimestamp } from "@/lib/functions/moment";
 import sendTypingInfo from "@/services/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -17,6 +19,39 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { v4 } from "uuid";
+
+function sortByTime(a: Message, b: Message) {
+  if (a.time < b.time) return 1;
+  if (a.time > b.time) return -1;
+
+  return 0;
+}
+
+function getStartOfDayTimestamp(timestamp: number) {
+  // Convert timestamp to Moment.js object
+  const date = moment(timestamp);
+
+  // Set time to start of the day (00:00:00)
+  date.startOf("day");
+
+  // Get Unix timestamp of the start of the day
+  const startOfDayTimestamp = date.unix();
+  console.log(startOfDayTimestamp);
+
+  return startOfDayTimestamp;
+}
+
+function groupBy(array: Message[], property: string) {
+  return array.reduce((acc: { [key: number]: Array<Message> }, obj: any) => {
+    const key = obj[property];
+    const keyStartTime = getStartOfDayTimestamp(key);
+    if (!acc[keyStartTime]) {
+      acc[keyStartTime] = [];
+    }
+    acc[keyStartTime].push(obj);
+    return acc;
+  }, {});
+}
 
 export default function Page({ params }: { params: { userid: string } }) {
   const dispatch = useAppDispatch();
@@ -43,37 +78,9 @@ export default function Page({ params }: { params: { userid: string } }) {
     setTextToSend("");
   }
 
-  function sortByTime(a: Message, b: Message) {
-    if (a.time < b.time) return 1;
-    if (a.time > b.time) return -1;
-
-    return 0;
-  }
-
-  function groupBy(array: Message[], property: string) {
-    return array.reduce((acc: { [key: number]: Array<Message> }, obj: any) => {
-      const key = obj[property];
-      const keyStartTime = getStartOfDayTimestamp(key);
-      if (!acc[keyStartTime]) {
-        acc[keyStartTime] = [];
-      }
-      acc[keyStartTime].push(obj);
-      return acc;
-    }, {});
-  }
-
-  function getStartOfDayTimestamp(timestamp: number) {
-    // Convert timestamp to Moment.js object
-    const date = moment(timestamp);
-
-    // Set time to start of the day (00:00:00)
-    date.startOf("day");
-
-    // Get Unix timestamp of the start of the day
-    const startOfDayTimestamp = date.unix();
-    console.log(startOfDayTimestamp);
-
-    return startOfDayTimestamp;
+  if (!chats[params.userid]?.name) {
+    router.push("/chat");
+    return;
   }
 
   const groupedMessages = groupBy(
@@ -95,7 +102,7 @@ export default function Page({ params }: { params: { userid: string } }) {
             {Object.entries(groupedMessages).map((value, index) => {
               return (
                 <div key={index}>
-                  <div>Time : {value[0]}</div>
+                  <ChatDayTime time={parseInt(value[0])} />
                   {value[1].map((msg, index) => {
                     return (
                       <ChatText
