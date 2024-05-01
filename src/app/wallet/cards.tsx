@@ -1,8 +1,12 @@
+"use client";
 import React from 'react';
 import Image from 'next/image';
 import Eth from "./4x/Eth@4x.png"
 import bitcoinpic from "./4x/Asset 1@4x.png"
-const Cards = () => {
+import { useGetBalance } from '@/hooks/useGetBalance';
+
+export default function Cards() {
+  const {balance} = useGetBalance();
     return (
         <div className="max-h-[310px] overflow-y-auto grid grid-rows-1  grid-flow-col gap-2 p-4">
         <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -23,8 +27,8 @@ const Cards = () => {
             </a>
     
             <div className="flex items-center justify-between">
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                $599
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                {balance} ETH
               </span>
               <a
                 href="#"
@@ -67,4 +71,3 @@ const Cards = () => {
         </div>
       </div>
     );};
-export default Cards;
