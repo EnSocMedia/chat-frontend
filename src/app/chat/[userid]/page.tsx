@@ -12,13 +12,17 @@ import {
 } from "@/store/message/actions";
 import { websocketConnect } from "@/store/socket";
 import { ClientMessage, Message } from "@/types/message";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { v4 } from "uuid";
 
 export default function Page({ params }: { params: { userid: string } }) {
   const dispatch = useAppDispatch();
   const messages = useAppSelector((state) => state.websocket.chatMessages);
+
+  const chats = useAppSelector((state) => state.websocket.chats);
   const { isFetching } = useGetMessagesUsingUserId(params.userid);
   const [textToSend, setTextToSend] = useState("");
   const router = useRouter();
@@ -31,7 +35,7 @@ export default function Page({ params }: { params: { userid: string } }) {
     const message = {
       cipher: textToSend,
       messageType: "private_message",
-      messageId: "SFDSFDS",
+      messageId: v4(),
       to: params.userid,
     } as ClientMessage;
 
@@ -39,26 +43,73 @@ export default function Page({ params }: { params: { userid: string } }) {
     setTextToSend("");
   }
 
+  function sortByTime(a: Message, b: Message) {
+    if (a.time < b.time) return 1;
+    if (a.time > b.time) return -1;
+
+    return 0;
+  }
+
+  function groupBy(array: Message[], property: string) {
+    return array.reduce((acc: { [key: number]: Array<Message> }, obj: any) => {
+      const key = obj[property];
+      const keyStartTime = getStartOfDayTimestamp(key);
+      if (!acc[keyStartTime]) {
+        acc[keyStartTime] = [];
+      }
+      acc[keyStartTime].push(obj);
+      return acc;
+    }, {});
+  }
+
+  function getStartOfDayTimestamp(timestamp: number) {
+    // Convert timestamp to Moment.js object
+    const date = moment(timestamp);
+
+    // Set time to start of the day (00:00:00)
+    date.startOf("day");
+
+    // Get Unix timestamp of the start of the day
+    const startOfDayTimestamp = date.unix();
+    console.log(startOfDayTimestamp);
+
+    return startOfDayTimestamp;
+  }
+
+  const groupedMessages = groupBy(
+    messages[params.userid].messages
+      .concat(messages[params.userid].pendingMessages)
+      .sort(sortByTime),
+    "time"
+  );
+
+  console.log("hrouped", groupedMessages);
+
   return (
     <div className="h-[88vh] p-4">
-      <Chatnavbar userid={params.userid} />
+      <Chatnavbar userid={chats[params.userid].name} />
       <div className="text-white h-full">
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}
           <div className="flex gap-2 flex-col overflow-y-scroll">
-            {messages &&
-              messages[params.userid] &&
-              messages[params.userid].messages
-                .map((message, index) => {
-                  return (
-                    <ChatText
-                      key={index}
-                      sent={message.to == params.userid}
-                      text={message.cipher}
-                    />
-                  );
-                })
-                .reverse()}
+            {Object.entries(groupedMessages).map((value, index) => {
+              return (
+                <div key={index}>
+                  <div>Time : {value[0]}</div>
+                  {value[1].map((msg, index) => {
+                    return (
+                      <ChatText
+                        sent={msg.to == params.userid}
+                        status={msg.status}
+                        text={msg.cipher}
+                        time={msg.time}
+                        key={index}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
           <div className="w-full flex gap-2 pb-4">
             <input

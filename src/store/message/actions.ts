@@ -1,37 +1,33 @@
 import { ClientMessage, Message } from "@/types/message";
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 
-
 /*
 Send Message Over HTTP
 */
 export const sendMessageUsingHttp = createAsyncThunk(
   "messages/sendMessage",
-  async (message: ClientMessage, thunkAPI) => {
-    const token = localStorage.getItem("token");
-    const publicKey = localStorage.getItem("publicKey");
-    console.log("URL is", process.env.SERVER_URL);
-    const req = await fetch(`http://localhost:3011/sendMessage`, {
-      method: "POST",
-      body: JSON.stringify(message),
-      headers: {
-        "Content-Type": "application/json",
-        AUTHENTICATION: token ?? "",
-      },
-    });
+  async (message: ClientMessage, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const publicKey = localStorage.getItem("publicKey");
+      const req = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/sendMessage`,
+        {
+          method: "POST",
+          body: JSON.stringify(message),
+          headers: {
+            "Content-Type": "application/json",
+            AUTHENTICATION: token ?? "",
+          },
+        }
+      );
 
-    //Insert this into pending queue
-    return {
-      id: "sd",
-      cipher: message.cipher,
-      from: publicKey,
-      messageType: "private_message",
-      name: "Athul",
-      status: "Sent",
-      time: new Date().getTime(),
-      to: message.to,
-      messageId: message.messageId,
-    } as Message;
+      const res = (await req.json()) as Message;
+
+      return res;
+    } catch (e) {
+      return rejectWithValue(message);
+    }
   }
 );
 

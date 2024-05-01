@@ -3,13 +3,18 @@ import { useUserSearch } from "@/hooks/useUserSearch";
 import SearchIcon from "./Icons/SearchIcon";
 import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/store/hooks";
+import { createStateForNewUser } from "@/store/socket";
 
 export default function UserSearch() {
+
+  const dispatch = useAppDispatch()
   const [textToSearch, setTextToSearch] = useState("");
   const { users } = useUserSearch(textToSearch);
   const router = useRouter();
-  const onClick = (publicKey: string) => {
+  const onClick = (publicKey: string,name:string) => {
     setTextToSearch('')
+      dispatch(createStateForNewUser({publicKey,name}))
     router.push(`/chat/${publicKey}`);
   };
 
@@ -38,7 +43,7 @@ export default function UserSearch() {
           return (
             <button
               onClick={() => {
-                onClick(user.publicKey);
+                onClick(user.publicKey,user.name);
               }}
               key={index}
             >
