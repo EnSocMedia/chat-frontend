@@ -4,7 +4,8 @@ import { onLogin } from "@/lib/functions/login";
 import { useRouter } from "next/navigation";
 import { toHexString } from "@/lib/functions/utils";
 import { toHex } from "viem";
-
+import { publicKeyToAddress } from "viem/utils";
+import { privateKeyToAccount, privateKeyToAddress } from "viem/accounts";
 
 export const useAuth = () => {
   const router = useRouter();
@@ -13,11 +14,12 @@ export const useAuth = () => {
   const onUserRegister = async (privateKey: Uint8Array, name: string) => {
     try {
       setIsRegistering(true);
-
       const { publicKey, token } = await onRegister(privateKey, name);
+      const address = publicKeyToAddress(publicKey);
+      localStorage.setItem("address", address);
       localStorage.setItem("token", token);
       localStorage.setItem("publicKey", publicKey);
-      localStorage.setItem("privatekey",toHexString(privateKey));
+      localStorage.setItem("privatekey", toHexString(privateKey));
       router.push("/chat");
       setIsRegistering(false);
     } catch (e) {
@@ -30,9 +32,11 @@ export const useAuth = () => {
     try {
       setIsLogging(true);
       const { token, publicKey } = await onLogin(privateKey);
+      const address = publicKeyToAddress(publicKey);
+      localStorage.setItem("address", address);
       localStorage.setItem("token", token);
       localStorage.setItem("publicKey", publicKey);
-      localStorage.setItem("privateKey",toHex(privateKey));
+      localStorage.setItem("privateKey", toHex(privateKey));
       console.log("Private key");
       console.log(toHex(privateKey));
       router.push("/chat");

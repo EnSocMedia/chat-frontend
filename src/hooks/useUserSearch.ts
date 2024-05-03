@@ -8,7 +8,7 @@ export const useUserSearch = (searchParam: string) => {
   const search = async () => {
     if (searchParam.length < 3) return setUsers([]);
     const token = localStorage.getItem("token");
-    const req = await fetch("http://172.18.203.111:3011/userSearch", {
+    const req = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/userSearch`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

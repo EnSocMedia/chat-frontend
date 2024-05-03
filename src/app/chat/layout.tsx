@@ -22,7 +22,6 @@ export default function Layout({
 
   //const { users } = useUserSearch(textToSearch);
 
-
   useEffect(() => {
     dispatch(websocketConnect());
     dispatch(getMessagesOnBootstrap());
@@ -46,18 +45,16 @@ export default function Layout({
     <>
       <Navbar />
       <div className="grid grid-cols-4 gap-2 h-[91vh] ">
-      
         <div className="bg-[#020212] col-span-1">
-        <div className="overflow-y-auto overflow-x-hidden h-[75vh] border-b border-gray-40 ">
-          
-              <UserSearch />
-          <div className="bg-[#020212] py-4 px-6 border-b border-gray-400">
-            <h2 className="text-lg font-semibold">Users </h2>
-          </div>
-          
+          <div className="overflow-y-auto overflow-x-hidden h-[75vh] border-b border-gray-40 ">
+            <UserSearch />
+            <div className="bg-[#020212] py-4 px-6 border-b border-gray-400">
+              <h2 className="text-lg font-semibold">Users </h2>
+            </div>
+
             <ul>
               {Object.entries(chats).map(([publicKey, chat]) => {
-                let isTyping=false;
+                let isTyping = false;
                 if (chat) {
                   isTyping = chat.isTyping;
                 }
@@ -73,12 +70,7 @@ export default function Layout({
                         <div className="flex items-center user-item cursor-pointer">
                           <div>
                             <h3 className="text-white-800 font-semibold flex flex-col">
-<<<<<<< Updated upstream
                               <span className="break-all">{chat.name}</span>
-=======
-                              <span>User</span>
-                              <span className="break-all">{publicKey}</span>
->>>>>>> Stashed changes
                             </h3>
                             {isTyping ? (
                               <p className="text-green-500">...Typing</p>
