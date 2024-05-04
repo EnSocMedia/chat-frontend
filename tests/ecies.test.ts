@@ -1,5 +1,6 @@
 import { decrypt, encrypt } from "../src/lib/ecies";
 import { PrivateKey } from "../src/lib/ecies/keys";
+
 describe("Encryption Algorithm Test", () => {
   it("Should encrypt and decrypt properly", () => {
     const keys = new PrivateKey();
