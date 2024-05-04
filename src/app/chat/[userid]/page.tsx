@@ -14,7 +14,6 @@ import {
 } from "@/store/message/actions";
 import { websocketConnect } from "@/store/socket";
 import { ClientMessage, Message } from "@/types/message";
-import { encrypt } from "eciesjs";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

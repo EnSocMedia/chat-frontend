@@ -1,8 +1,8 @@
-import { decrypt } from "@/lib/ecies";
+
+import { decrypt, encrypt } from "@/lib/ecies";
 import { toHexString } from "@/lib/functions/utils";
 import { ClientMessage, Message } from "@/types/message";
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { encrypt } from "eciesjs";
 import { toHex } from "viem";
 
 /*
@@ -16,8 +16,19 @@ export const sendMessageUsingHttp = createAsyncThunk(
       const publicKey = localStorage.getItem("publicKey")!;
       const privateKey = localStorage.getItem("privatekey")!;
 
+      // const doubleLayerEncryptedForm = encryptDoubleLayer(
+      //   message.to,
+      //   privateKey,
+      //   Buffer.from(message.cipher)
+      // );
+
+      // console.log("Double layer", doubleLayerEncryptedForm);
+
       const messageToSend = JSON.parse(JSON.stringify(message));
-      const encryptedMessage = encrypt(messageToSend.to, Buffer.from(messageToSend.cipher));
+      const encryptedMessage = encrypt(
+        messageToSend.to,
+        Buffer.from(messageToSend.cipher)
+      );
       const encryptedMessageForSelf = encrypt(
         publicKey,
         Buffer.from(messageToSend.cipher)

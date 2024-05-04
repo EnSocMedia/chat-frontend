@@ -10,14 +10,20 @@ import {
   symEncrypt,
 } from "./utils";
 
-export function encrypt(receiverRawPK: string | Uint8Array, msg: Uint8Array): Buffer {
+export function encrypt(
+  receiverRawPK: string | Uint8Array,
+  msg: Uint8Array
+): Buffer {
+  //Generate a random private Key
   const ephemeralKey = new PrivateKey();
 
+  //Receiver Public Key
   const receiverPK =
     receiverRawPK instanceof Uint8Array
       ? new PublicKey(receiverRawPK)
       : PublicKey.fromHex(receiverRawPK);
 
+      
   const symKey = ephemeralKey.encapsulate(receiverPK);
   const encrypted = symEncrypt(symKey, msg);
 
@@ -30,7 +36,10 @@ export function encrypt(receiverRawPK: string | Uint8Array, msg: Uint8Array): Bu
   return Buffer.from(concatBytes(pk, encrypted));
 }
 
-export function decrypt(receiverRawSK: string | Uint8Array, msg: Uint8Array): Buffer {
+export function decrypt(
+  receiverRawSK: string | Uint8Array,
+  msg: Uint8Array
+): Buffer {
   const receiverSK =
     receiverRawSK instanceof Uint8Array
       ? new PrivateKey(receiverRawSK)
