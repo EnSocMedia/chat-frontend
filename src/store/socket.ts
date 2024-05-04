@@ -14,6 +14,7 @@ import {
   getMessagesUsingUserId,
   sendMessageUsingHttp,
 } from "./message/actions";
+import { decrypt } from "@/lib/ecies";
 
 export interface Chats {
   [publicKey: string]: {
@@ -93,8 +94,8 @@ export function parseJwt(token: string) {
 export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
   builder
     .addCase(webSocketReceiveMessage, (state, { payload: { message } }) => {
-      console.log("Socket Message is", message);
       const token = localStorage.getItem("token");
+      const privateKey = localStorage.getItem("privatekey")!;
       if (!token) return;
       const { public_key } = parseJwt(token);
 
@@ -102,6 +103,15 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
 
       if (public_key == sender_key) {
         sender_key = message.to;
+        message.cipherSelf = decrypt(
+          privateKey,
+          Buffer.from(message.cipherSelf, "hex")
+        ).toString("ascii");
+      } else {
+        message.cipher = decrypt(
+          privateKey,
+          Buffer.from(message.cipher, "hex")
+        ).toString("ascii");
       }
       const prevMessages = state.chatMessages[sender_key]
         ? state.chatMessages[sender_key].messages
@@ -130,7 +140,8 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         chats: {
           ...state.chats,
           [sender_key]: {
-            last_message: message.cipher,
+            last_message:
+              public_key == sender_key ? message.cipherSelf : message.cipher,
             name: message.toName,
             lastMessageId: message.id,
             isTyping: false,
@@ -280,6 +291,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
     })
     .addCase(getMessagesOnBootstrap.fulfilled, (state, action) => {
       const token = localStorage.getItem("token");
+      const privateKey = localStorage.getItem("privatekey")!;
       if (!token) return;
       const { public_key } = parseJwt(token);
       const messages = action.payload.messages;
@@ -295,6 +307,15 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
 
         if (public_key == sender_key) {
           sender_key = message.to;
+          message.cipherSelf = decrypt(
+            privateKey,
+            Buffer.from(message.cipherSelf, "hex")
+          ).toString("ascii");
+        } else {
+          message.cipher = decrypt(
+            privateKey,
+            Buffer.from(message.cipher, "hex")
+          ).toString("ascii");
         }
         const prevMessageForThisChat =
           foo.chatMessages && foo.chatMessages[sender_key] !== undefined
@@ -308,13 +329,13 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         };
 
         foo.chats[sender_key] = {
-          last_message: message.cipher,
+          last_message:
+            public_key == sender_key ? message.cipherSelf : message.cipher,
           lastMessageId: message.messageId,
           isTyping: false,
           name: message.toName,
         };
       });
-      console.log(foo);
       return foo;
     })
     .addCase(sendMessageUsingHttp.pending, (state, action) => {
@@ -328,7 +349,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         from: publicKey,
         messageType: "private_message",
         toName: "Athul",
-        fromName:"Rithu",
+        fromName: "Rithu",
         status: "Wait",
         time: new Date().getTime(),
         to: message.to,
@@ -338,10 +359,16 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       state.chatMessages[message.to].pendingMessages.push(msgObj);
     })
     .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
+      const privateKey = localStorage.getItem("privatekey")!;
       const message = action.payload;
       state.chatMessages[message.to].pendingMessages = state.chatMessages[
         message.to
       ].pendingMessages.filter((msg) => msg.messageId !== message.messageId);
+
+      message.cipherSelf = decrypt(
+        privateKey,
+        Buffer.from(message.cipherSelf, "hex")
+      ).toString("ascii");
 
       if (state.chatMessages[message.to] === undefined) {
         return {
@@ -359,7 +386,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           chats: {
             ...state.chats,
             [message.to]: {
-              last_message: message.cipher,
+              last_message: message.cipherSelf,
               lastMessageId: message.id,
               isTyping: false,
               name: message.toName,
@@ -377,7 +404,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       state.chatMessages[message.to].messages.unshift(message);
       state.chatMessages[message.to].lastTimeStamp = message.time;
       state.chatMessages[message.to].lastMessageId = message.id;
-      state.chats[message.to].last_message = message.cipher;
+      state.chats[message.to].last_message = message.cipherSelf;
       state.chats[message.to].lastMessageId = message.id;
     })
     .addCase(sendMessageUsingHttp.rejected, (state, action) => {
@@ -417,8 +444,6 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               ...state.chats,
               [name]: {
                 ...state.chats[name],
-                last_message: state.chats[name].last_message,
-                lastMessageId: state.chats[name].lastMessageId,
                 isTyping: true,
               },
             },
@@ -444,8 +469,6 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             ...state.chats,
             [name]: {
               ...state.chats[name],
-              last_message: state.chats[name].last_message,
-              lastMessageId: state.chats[name].lastMessageId,
               isTyping: false,
             },
           },

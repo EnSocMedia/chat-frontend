@@ -7,6 +7,7 @@ export interface Message {
   toName: string; // Name of the Receiver
   fromName: string;
   cipher: string; //Encrypted Message
+  cipherSelf:string;
   messageType: string; // Type of the Messgae
   time: number; //Time at which the Message has been sent
   status: string; // What's the Status of the Message (Seem,Delivered,Sent)
@@ -18,6 +19,7 @@ export interface ClientMessage {
   to: string;
   cipher: string;
   messageType: string;
+  cipherSelf:string
 }
 
 //The type that the Receiver Send to Client

@@ -21,7 +21,7 @@ export default function Profile({}: ProfileProps) {
   return (
     <div className="px-8 text-center text-white">
       <div>{name}</div>
-      <div className="break-words">{publicKey}</div>
+      {/* <div className="break-words">{publicKey}</div> */}
     </div>
   );
 }

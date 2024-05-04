@@ -14,11 +14,14 @@ import {
 } from "@/store/message/actions";
 import { websocketConnect } from "@/store/socket";
 import { ClientMessage, Message } from "@/types/message";
+import { encrypt } from "eciesjs";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { text } from "stream/consumers";
 import { v4 } from "uuid";
+import { toHex } from "viem";
 
 function sortByTime(a: Message, b: Message) {
   if (a.time > b.time) return 1;
@@ -69,6 +72,7 @@ export default function Page({ params }: { params: { userid: string } }) {
   function messageSendHandler() {
     const message = {
       cipher: textToSend,
+      cipherSelf: textToSend,
       messageType: "private_message",
       messageId: v4(),
       to: params.userid,
@@ -107,8 +111,10 @@ export default function Page({ params }: { params: { userid: string } }) {
                     return (
                       <ChatText
                         sent={msg.to == params.userid}
-                        status={msg.status}
-                        text={msg.cipher}
+                        status={msg.status} 
+                        text={
+                          msg.to == params.userid ? msg.cipherSelf : msg.cipher
+                        }
                         time={msg.time}
                         key={index}
                       />

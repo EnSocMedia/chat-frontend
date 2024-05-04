@@ -1,4 +1,6 @@
+import { decrypt } from "eciesjs";
 import moment from "moment";
+import { toHex } from "viem";
 
 interface ChatTextProps {
   text: string;
@@ -8,9 +10,9 @@ interface ChatTextProps {
   time: number;
 }
 
-
-
 export default function ChatText({ text, sent, status, time }: ChatTextProps) {
+
+  console.log("CIUPHER HERE", text);
   return (
     <div className={`${sent ? "text-right" : "text-left "} p-2 `}>
       <div

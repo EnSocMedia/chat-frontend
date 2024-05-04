@@ -1,5 +1,9 @@
+import { decrypt } from "@/lib/ecies";
+import { toHexString } from "@/lib/functions/utils";
 import { ClientMessage, Message } from "@/types/message";
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { encrypt } from "eciesjs";
+import { toHex } from "viem";
 
 /*
 Send Message Over HTTP
@@ -9,12 +13,24 @@ export const sendMessageUsingHttp = createAsyncThunk(
   async (message: ClientMessage, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const publicKey = localStorage.getItem("publicKey");
+      const publicKey = localStorage.getItem("publicKey")!;
+      const privateKey = localStorage.getItem("privatekey")!;
+
+      const messageToSend = JSON.parse(JSON.stringify(message));
+      const encryptedMessage = encrypt(messageToSend.to, Buffer.from(messageToSend.cipher));
+      const encryptedMessageForSelf = encrypt(
+        publicKey,
+        Buffer.from(messageToSend.cipher)
+      );
+
+      messageToSend.cipher = toHexString(encryptedMessage);
+      messageToSend.cipherSelf = toHexString(encryptedMessageForSelf);
+
       const req = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/sendMessage`,
         {
           method: "POST",
-          body: JSON.stringify(message),
+          body: JSON.stringify(messageToSend),
           headers: {
             "Content-Type": "application/json",
             AUTHENTICATION: token ?? "",
@@ -26,6 +42,7 @@ export const sendMessageUsingHttp = createAsyncThunk(
 
       return res;
     } catch (e) {
+      console.log(e);
       return rejectWithValue(message);
     }
   }
@@ -40,7 +57,7 @@ export const getMessagesUsingUserId = createAsyncThunk(
     const { userId, limit = 50, before, after } = data;
     const token = localStorage.getItem("token");
     let proce;
-    let url = `${process.env.SERVER_URL}/user/${userId}/messages?limit=${limit}`;
+    let url = `${process.env.NEXT_PUBLIC_SERVER_URL}/user/${userId}/messages?limit=${limit}`;
     if (before) {
       url = url + `&before=${before}`;
     } else if (after) {
@@ -66,7 +83,7 @@ export const getMessagesOnBootstrap = createAsyncThunk(
   "messages/messagesOnBootstrap",
   async (thunkAPI) => {
     const token = localStorage.getItem("token");
-    let url = `http://172.18.203.111:3011/messages/getMessagesOnBootstrap`;
+    let url = `${process.env.NEXT_PUBLIC_SERVER_URL}/messages/getMessagesOnBootstrap`;
     const req = await fetch(url, {
       headers: {
         AUTHENTICATION: token!,

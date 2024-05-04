@@ -19,7 +19,7 @@ export const useAuth = () => {
       localStorage.setItem("address", address);
       localStorage.setItem("token", token);
       localStorage.setItem("publicKey", publicKey);
-      localStorage.setItem("privatekey", toHexString(privateKey));
+      localStorage.setItem("privatekey", toHex(privateKey));
       router.push("/chat");
       setIsRegistering(false);
     } catch (e) {
