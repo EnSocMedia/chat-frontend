@@ -9,14 +9,17 @@ import History from './history';
 import Cards from './cards'; // Import the new component
 import QRCodePopup from '@/components/QrCode';
 import TransactionPopup from '@/components/Transaction';
-import { privateKeyToAccount, privateKeyToAddress } from 'viem/accounts';
+import { useGetWallet } from '@/hooks/useGetWallet';
+import CopyableText from '@/components/CopyableText';
+
 
 // Define the MyComponent
-const MyComponent = () => {
+export default function MyComponent(){
   // State to manage the visibility of the QR code popup and QR data
   const [showQRPopup, setShowQRPopup] = useState(false);
   const [sendTran,setSendTran]=useState(false);
   const [qrData, setQRData] = useState('');
+  const {address} = useGetWallet();
 
   // Function to generate random string and update QR data
   const generateQRData = () => {
@@ -24,16 +27,7 @@ const MyComponent = () => {
     setQRData(randomString);
     setShowQRPopup(true);
   };
-  let Address="";
-  const ISSERVER = typeof window === "undefined";
 
-  if (!ISSERVER){
-    const privateKey=localStorage.getItem("privateKey");
-    console.log(privateKey);
-    //const address1=privateKeyToAddress(privateKey as '0x${string}');
-    //setAddress(address1);
-    //Address=address1;
-  }
   const showSendTransaction = () => {
     setSendTran(true);
   }
@@ -51,11 +45,16 @@ const MyComponent = () => {
     <div className="grid min-h-[140px] w-full place-items-center overflow-x-scroll rounded-lg p-9 lg:overflow-visible">
       <div className="-m-6 max-h-[768px] w-[calc(100%+48px)] overflow-scroll">
         {/* Navigation bar */}
-        <nav className="sticky top-0 z-10 grid place-items-center w-full max-w-full px-4 py-2 text-white bg-blue border rounded-none shadow-md h-max border-red/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
-          <div>
-            <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"> Welcome to Wallet page !!    {Address}</div>
-          </div>
-        </nav>
+        <nav className="sticky top-0 z-10 grid justify-items-center w-full max-w-full px-4 py-2 text-white bg-blue border rounded-none shadow-md h-max border-red/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
+  <div className="flex flex-col items-center">
+    <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white text-center">Welcome to Wallet page !!</div>
+    <div className='pt-2'>
+      <div className="flex justify-center">
+        <CopyableText text={address} />
+      </div>
+    </div>
+  </div>
+</nav>
 
         {/* Main content */}
         <div className="grid grid-rows-1 md:grid-cols-2 gap-5 pt-3">
@@ -85,7 +84,7 @@ const MyComponent = () => {
             </div>
             {/* History component */}
             <div>
-              <History />
+              <History address={address}/>
             </div>
           </div>
         </div>
@@ -102,4 +101,3 @@ const MyComponent = () => {
   );
 };
 
-export default MyComponent;

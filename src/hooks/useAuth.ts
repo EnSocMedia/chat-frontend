@@ -20,6 +20,8 @@ export const useAuth = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("publicKey", publicKey);
       localStorage.setItem("privatekey", toHex(privateKey));
+      localStorage.setItem("privatekey", toHexString(privateKey));
+      console.log(toHexString(privateKey));
       router.push("/chat");
       setIsRegistering(false);
     } catch (e) {
@@ -32,7 +34,7 @@ export const useAuth = () => {
     try {
       setIsLogging(true);
       const { token, publicKey } = await onLogin(privateKey);
-      const address = publicKeyToAddress(publicKey);
+      const address = privateKeyToAddress(toHex(privateKey));
       localStorage.setItem("address", address);
       localStorage.setItem("token", token);
       localStorage.setItem("publicKey", publicKey);

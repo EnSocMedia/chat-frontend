@@ -2,6 +2,7 @@ import useGenerateMnemonic from "@/hooks/useGenerateMnemonic";
 import generateMnemonicWords from "@/lib/words-algo/wordsGen";
 import { sha256 } from "@noble/hashes/sha256";
 import { useRef, useState } from "react";
+import DashRow from "./Dashrow";
 
 interface SignUpProps {
   onRegister: (privateKey: Uint8Array,name:string) => Promise<void>;
@@ -10,7 +11,7 @@ interface SignUpProps {
 
 export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
   const { isGenerating, mnemonic } = useGenerateMnemonic();
-
+  console.log(mnemonic.join(" "));
   const [userName, setUserName] = useState("");
   async function registerHandler() {
     const privateKeyBuffer =  sha256(mnemonic.join(" "));
@@ -26,7 +27,7 @@ export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
         {mnemonic.map((word, index) => {
           return (
             <div
-              className="flex items-center justify-center self-auto outline-offset-4 bg-white font-semibold text-lg font-sans border-rose-300 border-solid border-4 rounded-lg border-white pl-2 pt-2 pb-2 pr-2 text-black"
+              className="flex items-center justify-center self-auto outline-offset-4 bg-[#7b92b7] font-semibold text-lg font-sans border-rose-300 rounded-lg pl-2 pt-2 pb-2 pr-2 text-white"
               key={index}
             >
               {word}
@@ -64,7 +65,7 @@ export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
         <button
           disabled={!userName}
           onClick={registerHandler}
-          className="text-center p-4 rounded-md bg-emerald-500"
+          className="text-white disabled:cursor-not-allowed bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
         >
           Create Account
         </button>
@@ -72,10 +73,10 @@ export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
       </div>
       <div className="flex items-center">
   <div className="flex-1 border-t-2 border-white"></div>
-  <span className="px-3 text-white">or</span>
+  <DashRow/>
   <div className="flex-1 border-t-2 border-white"></div>
 </div>
-<button onClick={setsignin} className="bg-emerald-500 p-4 rounded-md">
+<button onClick={setsignin} className="text-white disabled:cursor-not-allowed bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
         Already Have a wallet
       </button>
     </div>

@@ -3,43 +3,47 @@
 import React from 'react';
 import {useTransaction} from '@/hooks/useTransaction';
 import { useEffect, useState } from "react";
+import secp256k1, { publicKeyConvert } from "secp256k1";
+import { toHexString } from '@/lib/functions/utils';
+import { publicKeyToAddress } from 'viem/utils';
 
 interface TransactionPopupProps {
+    publicKey:string,
     closeTransactionPopup: () => void;
   }
 
 // Define the QRCodePopup component
-const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
-    const [publicKey, setPublicKey] = useState<string>("");
+const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPopupProps) => {
     const [amount, setAmount] = useState<string>("");
     const {onSendViem,onSendRawTransaction } = useTransaction();
     const [selectedOption, setSelectedOption] = useState<string>("option1");
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isLoading, setIsLoading]= useState(false);
 
-
-    const handleConfirm = async () => {
-      
+    const pub=Uint8Array.from(Buffer.from(publicKey, 'hex'));
+    const compubKey=publicKeyConvert(pub,false);
+    const address=publicKeyToAddress(toHexString(compubKey));
+    const handleConfirm = () => {
+      //setIsLoading(true);
       setErrors({});
-      let formIsValid = true;
-    if (publicKey.length != 42) {
-      setErrors((prevErrors) => ({ ...prevErrors, publicKey: "Public Key is incorrect" }));
-      formIsValid = false;
-    }    
+      let formIsValid = true; 
     if (!amount.trim()) {
       setErrors((prevErrors) => ({ ...prevErrors, amount: "Amount is required" }));
       formIsValid = false;
     }
       if (formIsValid){
+        
       if (selectedOption === "option1") {
-        setIsLoading(true);
         console.log("settrue");
-        await onSendViem(publicKey, amount);
+        setIsLoading(true);
+        onSendViem(address, amount);
         console.log("setfalse");
         setIsLoading(false);
       } else {
+        setIsLoading(true);
         console.log("option2");
-        onSendRawTransaction(publicKey, amount);
+        onSendRawTransaction(address, amount);
+        setIsLoading(false);
       }
       setIsLoading(false);
     }
@@ -47,7 +51,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
     };
   return (
      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-11 rounded-lg relative w-96">
+      <div className="border-4 border-gray-200 border-opacity-25 rounded-full animate-spin w-12 h-12"></div> :<div className="bg-white p-11 rounded-lg relative w-96">
         {/* Close button */}
         <button 
           className="absolute top-0 right-0 p-2 text-gray-600 hover:text-gray-900" 
@@ -68,20 +72,6 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
             />
           </svg>
         </button>
-        {/* Render QR code with qrData */}
-        {/* Public Key input */}
-        <div className="mb-4">
-          <label htmlFor="publicKey" className="block text-gray-700 text-sm font-bold mb-2">Public Key</label>
-          <input
-            type="text"
-            id="publicKey"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Enter Public Key"
-            value={publicKey}
-            onChange={(e) => setPublicKey(e.target.value)}
-          />
-          {errors.publicKey && <p className="text-red-500 text-xs italic">{errors.publicKey}</p>}
-        </div>
         {/* Amount input */}
         <div className="mb-6">
           <label htmlFor="amount" className="block text-gray-700 text-sm font-bold mb-2">Amount</label>
@@ -127,11 +117,11 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
           onClick={handleConfirm}
         >
           Send
-        </button> :  <div className="rounded-full border-t-4 border-blue-500 border-solid h-10 w-10 animate-spin"></div>}
+        </button> :  <div className="border-4 border-gray-200 border-opacity-25 rounded-full animate-spin w-12 h-12"></div>}
         </div>
       </div>
     </div>
   );
 };
 
-export default TransactionPopup;
+export default ChatTransactionPopup;

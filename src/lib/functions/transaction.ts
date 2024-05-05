@@ -31,7 +31,7 @@ export const onSendingViem = async (address: string, amount: string) => {
   
         
     return {
-        hash: hash as any,
+        hash: hash as '0x{string}',
     };
 }
 return {

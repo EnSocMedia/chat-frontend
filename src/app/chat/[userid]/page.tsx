@@ -76,7 +76,6 @@ export default function Page({ params }: { params: { userid: string } }) {
       messageId: v4(),
       to: params.userid,
     } as ClientMessage;
-
     dispatch(sendMessageUsingHttp(message));
     setTextToSend("");
   }
@@ -97,7 +96,7 @@ export default function Page({ params }: { params: { userid: string } }) {
 
   return (
     <div className="h-[88vh] p-4">
-      <Chatnavbar userid={chats[params.userid].name} />
+      <Chatnavbar userid={chats[params.userid].name} publicKey={params.userid}/>
       <div className="text-white h-full">
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}

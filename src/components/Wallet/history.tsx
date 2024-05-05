@@ -1,12 +1,21 @@
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import React from 'react';
+import { HistoryComp } from './historycomp';
+import { hashDomain } from 'viem';
+interface HistoryProps {
+    address:string
+  }
 
-const History = () => {
+export default function History({ address  }: HistoryProps) {
+    const dispatch = useAppDispatch();
+    const history = useAppSelector((state) => state.websocket.history);
+    const hashhistory=history[address]?.transactions;
     return (
         <div className="overflow-y-auto grid grid-rows-1 grid-flow-col gap-4  p-3">
             <div className="max-h-[200px] overflow-y-auto">
                 <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700 ">
                     <h1>History</h1>
-                    <li className="pb-3 sm:pb-4">
+                    {hashhistory===undefined ? <div><li className="pb-3 sm:pb-4">
                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                             <div className="flex-shrink-0">
                                 <img className="w-8 h-8 rounded-full" src="https://cdn-icons-png.freepik.com/256/4128/4128405.png?ga=GA1.1.368707580.1712341458&" alt="Neil image" />
@@ -59,13 +68,15 @@ const History = () => {
                                 $320
                             </div>
                         </div>
-                    </li>
-                    
-                    {/* Repeat the same structure for other list items */}
+                    </li> </div>: hashhistory.map((item, index) => (
+            <div key={index}>
+                <HistoryComp hash={hashhistory[index]}/>
+            </div>
+        ))}
+
                 </ul>
             </div>
         </div>
     );
 }
 
-export default History;

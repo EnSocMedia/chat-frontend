@@ -30,7 +30,11 @@ export const onsendingRawTransaction = async (
             rawTransaction:JSON.stringify(request),
             signature:signature
         }
-        const bodydata=RLP.encode(JSON.stringify(data));
+
+        const data1 ={
+            data: data
+        }
+        const bodydata=RLP.encode(JSON.stringify(data1));
 
         const req = await fetch("http://172.18.203.111:3011/send_transaction", {
             method: "POST",

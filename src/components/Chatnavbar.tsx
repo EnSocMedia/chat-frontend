@@ -1,13 +1,16 @@
 import { useAppSelector } from "@/store/hooks";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import ChatTransactionPopup from "./ChatTransaction";
 interface Chatnavbarprops {
-  userid: string;
+  userid: string,
+  publicKey: string,
 }
 const truncateString = (str: string) => {
   return str.length > 15 ? str.substring(0, 15) + "..." : str;
 }
 
-export default function Chatnavbar({ userid }: Chatnavbarprops) {
+export default function Chatnavbar({ userid , publicKey}: Chatnavbarprops) {
   const router = useRouter();
   const chat = useAppSelector((state) => state.websocket.chats[userid]);
   let isTyping=false;
@@ -15,6 +18,17 @@ export default function Chatnavbar({ userid }: Chatnavbarprops) {
     isTyping = chat.isTyping;
   }
   const trunuserid=truncateString(userid);
+
+  const [sendTran,setSendTran]=useState(false);
+
+  const showSendTransaction = () => {
+    setSendTran(true);
+  }
+
+  const closeTransactionPopup = () => {
+    setSendTran(false);
+  }
+
   //isTyping= chat.isTyping;
   return (
     <div>
@@ -48,6 +62,12 @@ export default function Chatnavbar({ userid }: Chatnavbarprops) {
       {isTyping ? <div className="text-green-500">...Typing</div> : null}
     </div>
           <div className="flex items-center">
+          <button className="text-gray-600 focus:outline-none focus:text-gray-900 mr-2 pr-2" onClick={showSendTransaction}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>
+</button>
+
             <button className="text-gray-600 focus:outline-none focus:text-gray-900 mr-2 pr-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -83,6 +103,7 @@ export default function Chatnavbar({ userid }: Chatnavbarprops) {
           </div>
         </div>
       </nav>
+      {sendTran && <ChatTransactionPopup publicKey={publicKey} closeTransactionPopup={closeTransactionPopup}/>}
     </div>
   );
 }
