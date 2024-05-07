@@ -334,6 +334,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         let cipherSelf = message.cipherSelf;
         if (public_key.toLowerCase() == sender_key.toLowerCase()) {
           sender_key = message.to;
+
           if (message.infoType == "message") {
             message.cipherSelf = decrypt(
               privateKey,
@@ -342,13 +343,17 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             cipherSelf = message.cipherSelf;
           }
         } else if (message.infoType == "message") {
+          toName = message.fromName;
           message.cipher = decrypt(
             privateKey,
             Buffer.from(message.cipher, "hex")
           ).toString("ascii");
-          toName = message.fromName;
+
           cipherSelf = message.cipher;
+        } else {
+          toName = message.fromName;
         }
+
         const prevMessageForThisChat =
           foo.chatMessages && foo.chatMessages[sender_key] !== undefined
             ? foo.chatMessages[sender_key].messages
@@ -666,11 +671,10 @@ export const websocketMiddleware: Middleware = (store) => {
             message: JSON.parse(event.data),
           })
         );
-        if (JSON.parse(messsage).infoType=="transaction")
-          {
-            let recievemoney=new Audio("/recievemoney.mp3");
-            recievemoney.play();
-          }
+        if (JSON.parse(messsage).infoType == "transaction") {
+          let recievemoney = new Audio("/recievemoney.mp3");
+          recievemoney.play();
+        }
         break;
       case "TYPING":
         store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));
