@@ -107,7 +107,7 @@ export default function ChatText({
           <h1 className="font-bold text-[16px]">Payment To {to} </h1>
           <div className="text-[24px]">{value} ETH</div>
           <div className="text-[14px]">
-            Paid {day} {month}{" "}
+            Paid on {day} {month}{" "}
             <div className="text-right text-[10px]">{timeFor}</div>
           </div>
           <button className="text-[12px] text-center w-full py-2 text-white0">
