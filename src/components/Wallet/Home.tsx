@@ -46,7 +46,7 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
     <div className="grid min-h-[140px] w-full place-items-center overflow-x-scroll rounded-lg p-9 lg:overflow-visible">
       <div className="-m-6 max-h-[768px] w-[calc(100%+48px)] overflow-scroll">
         {/* Navigation bar */}
-        <nav className="sticky top-0 z-10 grid justify-items-center w-full max-w-full px-4 py-2 text-white bg-blue border rounded-none shadow-md h-max border-red/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
+        <nav className="sticky top-0 z-10 grid justify-items-center w-full max-w-full px-4 py-2 text-white h-max  lg:px-8 lg:py-4">
           <div className="flex flex-col items-center">
             <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white text-center">
               Welcome to Wallet page !!
@@ -65,11 +65,37 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
             {nfts.map((nft, index) => {
               return (
                 <div key={index}>
-                  <NftCard tradeurl={nft.opensea_url} image={nft.image_url} name={nft.name} />
+                  <NftCard
+                    tradeurl={nft.opensea_url}
+                    image={nft.image_url}
+                    name={nft.name}
+                  />
                 </div>
               );
             })}
           </div>
+        </div>
+
+        <div>
+          <h1 className="font-bold  text-[30px] py-2">Tokens</h1>
+          <table className="w-full">
+            <thead>
+              <th>
+                <td>Token</td>
+              </th>
+              <th>
+                <td>Price</td>
+              </th>
+              <th>
+                <td>Holdings</td>
+              </th>
+            </thead>
+            <tbody>
+              <tr>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* <div className="grid grid-rows-1 md:grid-cols-2 gap-5 pt-3">
@@ -95,17 +121,10 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
         </div> */}
       </div>
 
-      {/* QR Code Popup */}
-      {/* Render popup if showQRPopup is true */}
-      {!sendTran && showQRPopup && (
-        <QRCodePopup qrData={qrData} closeQRPopup={closeQRPopup} />
-      )}
+      {!sendTran && showQRPopup && <QRCodePopup closeQRPopup={closeQRPopup} />}
       {sendTran && (
         <TransactionPopup closeTransactionPopup={closeTransactionPopup} />
       )}
-      {/*sendTran && </>*/}
-      {/* Footer component */}
-      {/* <Footer /> */}
     </div>
   );
 }
