@@ -87,9 +87,9 @@ export default function MyComponent() {
               </button>
             </div>
             {/* History component */}
-            <div>
+            {/* <div>
               <History address={address} />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
