@@ -60,8 +60,14 @@ export default function ChatText({
 }: ChatTextProps) {
   const formatter = new Intl.DateTimeFormat("en", { month: "short" });
   const formatterDay = new Intl.DateTimeFormat("en", { day: "2-digit" });
+  const formatterTime = new Intl.DateTimeFormat("en", {
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
   const day = formatterDay.format(new Date(time));
   const month = formatter.format(new Date(time));
+  const timeFor = formatterTime.format(new Date(time));
   if (type == "message") {
     return (
       <div className={`flex ${sent ? "justify-end" : "justify-start"} p-2 `}>
@@ -70,7 +76,10 @@ export default function ChatText({
             sent ? "bg-[#9400FF]" : "bg-[#202020] text-white"
           } p-2 rounded-lg inline-block gap-1 flex items-center`}
         >
-          <div>{text}</div>
+          <div>
+            <div>{text}</div>{" "}
+            <div className="text-right text-[10px]">{timeFor}</div>
+          </div>
           {status && status === "true" ? (
             <LoadingIcon
               className={`h-5 w-5 ${
@@ -98,7 +107,8 @@ export default function ChatText({
           <h1 className="font-bold text-[16px]">Payment To {to} </h1>
           <div className="text-[24px]">{value} ETH</div>
           <div className="text-[14px]">
-            Paid {day} {month}
+            Paid {day} {month}{" "}
+            <div className="text-right text-[10px]">{timeFor}</div>
           </div>
           <button className="text-[12px] text-center w-full py-2 text-white0">
             <a target="_blank" href={`https://sepolia.etherscan.io/tx/${hash}`}>

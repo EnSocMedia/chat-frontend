@@ -522,7 +522,8 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       state.chatMessages[message.to].messages.unshift(message);
       state.chatMessages[message.to].lastTimeStamp = message.time;
       state.chatMessages[message.to].lastMessageId = message.id;
-      state.chats[message.to].last_message = message.cipherSelf;
+      state.chats[message.to].last_message =
+        message.infoType == "transaction" ? "Payment" : message.cipherSelf;
       state.chats[message.to].lastMessageId = message.id;
     })
     .addCase(sendMessageUsingHttp.rejected, (state, action) => {

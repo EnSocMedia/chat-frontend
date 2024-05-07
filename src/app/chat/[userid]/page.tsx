@@ -83,7 +83,7 @@ export default function Page({ params }: { params: { userid: string } }) {
     setTextToSend("");
     toggle();
   }
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event:any) => {
     if (event.key === 'Enter') {
       messageSendHandler();
     }
