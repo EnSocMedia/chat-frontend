@@ -3,7 +3,7 @@
 export default async function sendTypingInfo(publicKey: string) {
   const token = localStorage.getItem("token");
   try {
-    let url = `http://172.18.203.111:3011/typing/${publicKey}`;
+    let url = `${process.env.NEXT_PUBLIC_SERVER_URL}typing/${publicKey}`;
     const req = await fetch(url,{
       headers : {
         AUTHENTICATION: token!

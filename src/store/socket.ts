@@ -43,13 +43,12 @@ export interface Messages {
       isFecthing: boolean;
     };
   };
-  history : {
-    [publicKey:string] : {
+  history: {
+    [publicKey: string]: {
       transactions: string[];
-    }
-  }
+    };
+  };
 }
-
 
 export const createStateForNewUser = createAction<{
   name: string;
@@ -73,7 +72,7 @@ const initialState: Messages = {
   chatMessages: {},
   chats: {},
   isFetchingChats: {},
-  history: {}
+  history: {},
 };
 
 // export const handleTypingTimeout = (publicKey: string) => () => {
@@ -162,9 +161,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             isFecthing: false,
           },
         },
-        history : {
+        history: {
           ...state.history,
-        }
+        },
       };
     })
     .addCase(getMessagesUsingUserId.fulfilled, (state, action) => {
@@ -237,9 +236,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               isFecthing: false,
             },
           },
-          history : {
+          history: {
             ...state.history,
-          }
+          },
         };
       } else {
         const hasMessage = newMessages.length > 0;
@@ -280,9 +279,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               isFecthing: false,
             },
           },
-          history : {
+          history: {
             ...state.history,
-          }
+          },
         };
       }
     })
@@ -305,9 +304,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             isFecthing: false,
           },
         },
-        history : {
+        history: {
           ...state.history,
-        }
+        },
       };
     })
     .addCase(getMessagesOnBootstrap.fulfilled, (state, action) => {
@@ -316,7 +315,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       if (!token) return;
       const { public_key } = parseJwt(token);
       const messages = action.payload.messages;
-
+      console.log(messages);
       let foo = {
         chatMessages: {},
         chats: {},
@@ -325,7 +324,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
 
       messages.forEach((message) => {
         let sender_key = message.from;
-
+        let toName = message.toName;
         if (public_key == sender_key) {
           sender_key = message.to;
           message.cipherSelf = decrypt(
@@ -337,6 +336,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             privateKey,
             Buffer.from(message.cipher, "hex")
           ).toString("ascii");
+           toName = message.fromName;
         }
         const prevMessageForThisChat =
           foo.chatMessages && foo.chatMessages[sender_key] !== undefined
@@ -354,7 +354,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             public_key == sender_key ? message.cipherSelf : message.cipher,
           lastMessageId: message.messageId,
           isTyping: false,
-          name: message.toName,
+          name: toName,
         };
       });
       return foo;
@@ -379,33 +379,31 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
 
       state.chatMessages[message.to].pendingMessages.push(msgObj);
     })
-    .addCase(sendTransactionHash.fulfilled, (state,action) => {
-      const hash=action.payload;
+    .addCase(sendTransactionHash.fulfilled, (state, action) => {
+      const hash = action.payload;
       console.log("Hash inside socket");
       console.log(hash);
-      const address=localStorage.getItem("address");
-      if (state.history[address!]===undefined)
-        {
-          return {
-            chatMessages: {
-              ...state.chatMessages,
+      const address = localStorage.getItem("address");
+      if (state.history[address!] === undefined) {
+        return {
+          chatMessages: {
+            ...state.chatMessages,
+          },
+          chats: {
+            ...state.chats,
+          },
+          isFetchingChats: {
+            ...state.isFetchingChats,
+          },
+          history: {
+            ...state.history,
+            [address!]: {
+              transactions: [hash],
             },
-            chats: {
-              ...state.chats,
-            },
-            isFetchingChats : {
-              ...state.isFetchingChats,
-            },
-            history : {
-              ...state.history,
-              [address!] : {
-                transactions:[hash]
-              }
-            }
-          }
-        }
-        state.history[address!].transactions.unshift(hash);
-
+          },
+        };
+      }
+      state.history[address!].transactions.unshift(hash);
     })
     .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
       const privateKey = localStorage.getItem("privatekey")!;
@@ -417,7 +415,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       ].pendingMessages.filter((msg) => msg.messageId !== message.messageId);
 
       console.log(message);
-      
+
       console.log(message.cipherSelf);
       message.cipherSelf = decrypt(
         privateKey,
@@ -452,9 +450,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               isFecthing: false,
             },
           },
-          history : {
+          history: {
             ...state.history,
-          }
+          },
         };
       }
 
@@ -507,9 +505,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
             isFetchingChats: {
               ...state.isFetchingChats,
             },
-            history : {
+            history: {
               ...state.history,
-            }
+            },
           };
         }
       }
@@ -535,9 +533,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           isFetchingChats: {
             ...state.isFetchingChats,
           },
-          history : {
+          history: {
             ...state.history,
-          }
+          },
         };
       }
       return state;
@@ -570,9 +568,9 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
               isFecthing: false,
             },
           },
-          history : {
+          history: {
             ...state.history,
-          }
+          },
         };
       }
     )
@@ -611,11 +609,10 @@ export const websocketMiddleware: Middleware = (store) => {
       default:
         console.log("Invalid Message type");
     }
-    if (JSON.parse(messsage).message_type=="TYPING")
-            {
-              console.log("found Tpying");
-              store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));
-            }
+    if (JSON.parse(messsage).message_type == "TYPING") {
+      console.log("found Tpying");
+      store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));
+    }
   };
 
   return (next: Dispatch) => {
@@ -625,7 +622,7 @@ export const websocketMiddleware: Middleware = (store) => {
           if (socket !== null) {
             socket.close();
           }
-          socket = new WebSocket("ws://172.18.203.111:3011/ws");
+          socket = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/ws`);
 
           socket.onopen = onOpen(store);
           socket.onmessage = onMessage(store);

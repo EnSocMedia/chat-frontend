@@ -47,14 +47,6 @@ export const sendMessageUsingHttp = createAsyncThunk(
       const publicKey = localStorage.getItem("publicKey")!;
       const privateKey = localStorage.getItem("privatekey")!;
 
-      // const doubleLayerEncryptedForm = encryptDoubleLayer(
-      //   message.to,
-      //   privateKey,
-      //   Buffer.from(message.cipher)
-      // );
-
-      // console.log("Double layer", doubleLayerEncryptedForm);
-
       const messageToSend = JSON.parse(JSON.stringify(message));
       const encryptedMessage = encrypt(
         messageToSend.to,
@@ -79,13 +71,8 @@ export const sendMessageUsingHttp = createAsyncThunk(
           },
         }
       );
-      console.log("get request");
-      console.log(req.json);
 
       const res = (await req.json()) as Message;
-      console.log("message");
-      console.log(res);
-
       return res;
     } catch (e) {
       console.log(e);
