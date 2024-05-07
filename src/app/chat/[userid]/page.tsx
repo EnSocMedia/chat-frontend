@@ -70,6 +70,10 @@ export default function Page({ params }: { params: { userid: string } }) {
   // }, []);
 
   function messageSendHandler() {
+    if (textToSend.trim().length==0)
+      {
+        return;
+      }
     const message = {
       cipher: textToSend,
       cipherSelf: textToSend,

@@ -46,7 +46,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
     const amo=parseFloat(amount);
     if (amo>bal)
     {
-        setErrors((prevErrors)=>({...prevErrors,amount:"Amount is not sufficient"}))
+        setErrors((prevErrors)=>({...prevErrors,amount:"Not enough money"}))
         formIsValid=false;
         return;
     }
@@ -63,7 +63,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
       {
         console.log(parseFloat(amount)-0.001);
         console.log(parseFloat(balance));
-        setErrors((prevErrors)=>({...prevErrors,amount:"Amount is not sufficient"}))
+        setErrors((prevErrors)=>({...prevErrors,amount:"Not enough money"}))
         formIsValid=false;
       }
       if (formIsValid){
