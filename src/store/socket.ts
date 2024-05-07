@@ -687,10 +687,6 @@ export const websocketMiddleware: Middleware = (store) => {
       default:
         console.log("Invalid Message type");
     }
-    if (JSON.parse(messsage).message_type == "TYPING") {
-      console.log("found Tpying");
-      store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));
-    }
   };
 
   return (next: Dispatch) => {
