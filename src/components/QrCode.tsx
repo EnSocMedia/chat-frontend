@@ -2,14 +2,15 @@
 "use client";
 import React from 'react';
 import QRCode from 'qrcode.react';
+import { useGetWallet } from '@/hooks/useGetWallet';
 
 interface QRCodePopupProps {
-    qrData: string;
-    closeQRPopup: () => void;
-  }
+  closeQRPopup: () => void;
+}
 
 // Define the QRCodePopup component
-const QRCodePopup = ({ qrData, closeQRPopup }: QRCodePopupProps) => {
+const QRCodePopup = ({ closeQRPopup }: QRCodePopupProps) => {
+  const { address } = useGetWallet();
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-8 rounded-lg relative">
@@ -33,8 +34,8 @@ const QRCodePopup = ({ qrData, closeQRPopup }: QRCodePopupProps) => {
             />
           </svg>
         </button>
-        {/* Render QR code with qrData */}
-        <QRCode value={qrData} />
+        {/* Render QR code with address */}
+        <QRCode value={address} />
       </div>
     </div>
   );
