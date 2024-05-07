@@ -26,8 +26,8 @@ export default function Chat() {
 
 
   return (
-    <div className="flex justify-center items-center h-full">
-      <div className="font-bold text-[24px] px-10 text-center">
+    <div className="flex justify-center items-center h-full" >
+      <div className="font-bold text-[24px] px-10 text-center" >
         Welcome to EncSoMedia Chat With anyone in this world securely with just 
         cryptographic keys
       <div style={{ display: 'flex', justifyContent: 'center' }}>
