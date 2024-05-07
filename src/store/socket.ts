@@ -325,18 +325,22 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
       messages.forEach((message) => {
         let sender_key = message.from;
         let toName = message.toName;
-        if (public_key == sender_key) {
+        let cipherSelf = message.cipherSelf;
+        if (public_key.toLowerCase() == sender_key.toLowerCase()) {
+          console.log("Same");
           sender_key = message.to;
           message.cipherSelf = decrypt(
             privateKey,
             Buffer.from(message.cipherSelf, "hex")
           ).toString("ascii");
+          cipherSelf = message.cipherSelf;
         } else {
           message.cipher = decrypt(
             privateKey,
             Buffer.from(message.cipher, "hex")
           ).toString("ascii");
-           toName = message.fromName;
+          toName = message.fromName;
+          cipherSelf = message.cipher
         }
         const prevMessageForThisChat =
           foo.chatMessages && foo.chatMessages[sender_key] !== undefined
@@ -350,8 +354,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         };
 
         foo.chats[sender_key] = {
-          last_message:
-            public_key == sender_key ? message.cipherSelf : message.cipher,
+          last_message:cipherSelf,
           lastMessageId: message.messageId,
           isTyping: false,
           name: toName,
