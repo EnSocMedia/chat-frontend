@@ -37,8 +37,7 @@ export default function UserSearch() {
     <div>
       <div className="flex ">
         <div className="flex-col px-0.5">
-          <div className="bg-[#020212] py-4 px-6 border-gray-400">
-            <h2 className="text-lg font-semibold">Search Users </h2>
+          <div className="py-4 px-6 border-gray-400">
             <div className="w-full pt-2">
               <div className="relative w-full">
                 {/* <svg
@@ -58,14 +57,13 @@ export default function UserSearch() {
               </div>
             </div>
           </div>
-                <input
-                  value={textToSearch}
-                  type="text"
-                  className="text-black pl-5 py-2 px-40   rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
-                  onChange={searchInputHandler}
-                  placeholder="Search..."
-
-                />
+          <input
+            value={textToSearch}
+            type="text"
+            className="text-black pl-5 py-2 px-40   rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+            onChange={searchInputHandler}
+            placeholder="Search Users"
+          />
         </div>
 
         {/* <button className="p-2 rounded-md bg-blue-800 text-white hover:bg-blue-600 focus:outline-none">

@@ -5,6 +5,7 @@ import Chatnavbar from "@/components/Chatnavbar";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { useGetMessagesUsingUserId } from "@/hooks/useGetMessages";
+import { useMovementAudio } from "@/hooks/useMovementAudio";
 import { getDateFromTimestamp } from "@/lib/functions/moment";
 import sendTypingInfo from "@/services/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -58,7 +59,7 @@ function groupBy(array: Message[], property: string) {
 export default function Page({ params }: { params: { userid: string } }) {
   const dispatch = useAppDispatch();
   const messages = useAppSelector((state) => state.websocket.chatMessages);
-
+  const { playing, toggle } = useMovementAudio();
   const chats = useAppSelector((state) => state.websocket.chats);
   const { isFetching } = useGetMessagesUsingUserId(params.userid);
   const [textToSend, setTextToSend] = useState("");
@@ -78,7 +79,9 @@ export default function Page({ params }: { params: { userid: string } }) {
       infoType: "message",
     } as ClientMessage;
     dispatch(sendMessageUsingHttp(message));
+
     setTextToSend("");
+    toggle();
   }
 
   if (!chats[params.userid]?.name) {
@@ -96,7 +99,7 @@ export default function Page({ params }: { params: { userid: string } }) {
   console.log("hrouped", groupedMessages);
 
   return (
-    <div className="h-[87vh]">
+    <div className="h-[94vh]">
       <Chatnavbar
         userid={chats[params.userid].name}
         publicKey={params.userid}
@@ -134,7 +137,7 @@ export default function Page({ params }: { params: { userid: string } }) {
               );
             })}
           </div>
-          <div className="w-full flex gap-2 pb-4 px-8">
+          <div className="w-full flex gap-2 pb-4 px-10">
             <input
               value={textToSend}
               onChange={(e) => {
@@ -145,7 +148,7 @@ export default function Page({ params }: { params: { userid: string } }) {
               className="text-black bg-red w-full rounded-md"
             />
             <button
-              className="bg-blue-600 p-2 rounded-md "
+              className="bg-[#9400FF] p-2 rounded-md "
               onClick={messageSendHandler}
             >
               Send

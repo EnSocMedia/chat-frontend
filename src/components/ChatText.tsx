@@ -67,7 +67,7 @@ export default function ChatText({
       <div className={`flex ${sent ? "justify-end" : "justify-start"} p-2 `}>
         <div
           className={`${
-            sent ? "bg-[#31363F]" : "bg-gray-200 text-black"
+            sent ? "bg-[#9400FF]" : "bg-[#202020] text-white"
           } p-2 rounded-lg inline-block gap-1 flex items-center`}
         >
           <div>{text}</div>
@@ -90,13 +90,13 @@ export default function ChatText({
   } else {
     return (
       <div className={`flex ${sent ? "justify-end" : "justify-start"} my-2 `}>
-        <div className="border border-white p-4 rounded-lg w-[25%]">
+        <div className=" p-4 rounded-lg w-[25%] bg-[#9400FF]">
           <h1 className="font-bold text-[16px]">Payment To {to} </h1>
           <div className="text-[24px]">{value} ETH</div>
           <div className="text-[14px]">
             Paid {day} {month}
           </div>
-          <button className="text-[12px] text-center w-full py-2 text-blue-600">
+          <button className="text-[12px] text-center w-full py-2 text-white0">
             <a target="_blank" href={`https://sepolia.etherscan.io/tx/${hash}`}>
               View on Explorer
             </a>
