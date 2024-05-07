@@ -1,4 +1,3 @@
-
 import moment from "moment";
 import { toHex } from "viem";
 
@@ -8,6 +7,8 @@ interface ChatTextProps {
   sent: boolean;
   status: string;
   time: number;
+  type: string;
+  value?: string;
 }
 
 function TickIcon({ className }) {
@@ -44,21 +45,45 @@ function LoadingIcon({ className }) {
   );
 }
 
-export default function ChatText({ text, sent, status, time }: ChatTextProps) {
-  return (
-    <div className={`flex ${sent ? "justify-end" : "justify-start"} p-2 `}>
-      <div
-        className={`${
-          sent ? "bg-blue-500" : "bg-gray-200 text-black"
-        } p-2 rounded-lg inline-block gap-1 flex items-center`}
-      >
-        <div>{text}</div>
-        {status && status === "true" ? (
-          <LoadingIcon className={`h-5 w-5 ${sent ? "text-white" : "text-blue-500"} ml-1`} />
-        ) : (
-          <TickIcon className={`h-5 w-5 ${sent ? "text-white" : "text-blue-500"} ml-1`} />
-        )}
+export default function ChatText({
+  text,
+  sent,
+  status,
+  time,
+  type,
+  value,
+}: ChatTextProps) {
+  if (type == "message") {
+    return (
+      <div className={`flex ${sent ? "justify-end" : "justify-start"} p-2 `}>
+        <div
+          className={`${
+            sent ? "bg-blue-500" : "bg-gray-200 text-black"
+          } p-2 rounded-lg inline-block gap-1 flex items-center`}
+        >
+          <div>{text}</div>
+          {status && status === "true" ? (
+            <LoadingIcon
+              className={`h-5 w-5 ${
+                sent ? "text-white" : "text-blue-500"
+              } ml-1`}
+            />
+          ) : (
+            <TickIcon
+              className={`h-5 w-5 ${
+                sent ? "text-white" : "text-blue-500"
+              } ml-1`}
+            />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div>
+        Transaction hash :{text}
+        <div>Value {value}</div>
+      </div>
+    );
+  }
 }

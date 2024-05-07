@@ -36,7 +36,7 @@ const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPop
       if (selectedOption === "option1") {
         console.log("settrue");
         setIsLoading(true);
-        onSendViem(address, amount);
+        onSendViem(address, amount,publicKey);
         console.log("setfalse");
         setIsLoading(false);
       } else {

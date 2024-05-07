@@ -11,6 +11,7 @@ export interface Message {
   messageType: string; // Type of the Messgae
   time: number; //Time at which the Message has been sent
   status: string; // What's the Status of the Message (Seem,Delivered,Sent)
+  infoType:string
 }
 
 //The type that the Client Send to Reciever
@@ -20,6 +21,7 @@ export interface ClientMessage {
   cipher: string;
   messageType: string;
   cipherSelf:string
+  infoType:string
 }
 
 //The type that the Receiver Send to Client

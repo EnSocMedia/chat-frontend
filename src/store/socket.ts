@@ -329,18 +329,20 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         if (public_key.toLowerCase() == sender_key.toLowerCase()) {
           console.log("Same");
           sender_key = message.to;
-          message.cipherSelf = decrypt(
-            privateKey,
-            Buffer.from(message.cipherSelf, "hex")
-          ).toString("ascii");
-          cipherSelf = message.cipherSelf;
-        } else {
+          if (message.infoType == "message") {
+            message.cipherSelf = decrypt(
+              privateKey,
+              Buffer.from(message.cipherSelf, "hex")
+            ).toString("ascii");
+            cipherSelf = message.cipherSelf;
+          }
+        } else if (message.infoType == "message") {
           message.cipher = decrypt(
             privateKey,
             Buffer.from(message.cipher, "hex")
           ).toString("ascii");
           toName = message.fromName;
-          cipherSelf = message.cipher
+          cipherSelf = message.cipher;
         }
         const prevMessageForThisChat =
           foo.chatMessages && foo.chatMessages[sender_key] !== undefined
@@ -354,7 +356,7 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         };
 
         foo.chats[sender_key] = {
-          last_message:cipherSelf,
+          last_message: cipherSelf,
           lastMessageId: message.messageId,
           isTyping: false,
           name: toName,
@@ -378,36 +380,62 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         time: new Date().getTime(),
         to: message.to,
         messageId: message.messageId,
+        infoType: "message",
       } as Message;
 
       state.chatMessages[message.to].pendingMessages.push(msgObj);
     })
-    .addCase(sendTransactionHash.fulfilled, (state, action) => {
-      const hash = action.payload;
-      console.log("Hash inside socket");
-      console.log(hash);
-      const address = localStorage.getItem("address");
-      if (state.history[address!] === undefined) {
-        return {
-          chatMessages: {
-            ...state.chatMessages,
-          },
-          chats: {
-            ...state.chats,
-          },
-          isFetchingChats: {
-            ...state.isFetchingChats,
-          },
-          history: {
-            ...state.history,
-            [address!]: {
-              transactions: [hash],
-            },
-          },
-        };
-      }
-      state.history[address!].transactions.unshift(hash);
-    })
+    // .addCase(sendTransactionHash.pending, (state, action) => {
+    //   const message = action.meta.arg;
+
+    //   const publicKey = localStorage.getItem("publicKey");
+
+    //   const msgObj = {
+    //     id: "",
+    //     cipher: message.cipher,
+    //     from: publicKey,
+    //     messageType: "private_message",
+    //     toName: "Athul",
+    //     fromName: "Rithu",
+    //     status: "Wait",
+    //     time: new Date().getTime(),
+    //     to: message.to,
+    //     messageId: message.messageId,
+    //     infoType: "transaction",
+    //   } as Message;
+
+    //   if (state.chatMessages[message.to].pendingMessages) {
+    //     state.chatMessages[message.to].pendingMessages.push(msgObj);
+    //   } else {
+    //     state.chatMessages[message.to].pendingMessages = [msgObj];
+    //   }
+    // })
+    // .addCase(sendTransactionHash.fulfilled, (state, action) => {
+    //   const hash = action.payload;
+    //   console.log("Hash inside socket");
+    //   console.log(hash);
+    //   const address = localStorage.getItem("address");
+    //   if (state.history[address!] === undefined) {
+    //     return {
+    //       chatMessages: {
+    //         ...state.chatMessages,
+    //       },
+    //       chats: {
+    //         ...state.chats,
+    //       },
+    //       isFetchingChats: {
+    //         ...state.isFetchingChats,
+    //       },
+    //       history: {
+    //         ...state.history,
+    //         [address!]: {
+    //           transactions: [hash],
+    //         },
+    //       },
+    //     };
+    //   }
+    //   state.history[address!].transactions.unshift(hash);
+    // })
     .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
       const privateKey = localStorage.getItem("privatekey")!;
       console.log("hello");
@@ -424,6 +452,53 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         privateKey,
         Buffer.from(message.cipherSelf, "hex")
       ).toString("ascii");
+
+      if (state.chatMessages[message.to] === undefined) {
+        return {
+          chatMessages: {
+            ...state.chatMessages,
+            [message.to]: {
+              messages: [message],
+              lastMessageId: message.id,
+              lastTimeStamp: message.time,
+              pendingMessages: [
+                ...state.chatMessages[message.to].pendingMessages,
+              ],
+            },
+          },
+          chats: {
+            ...state.chats,
+            [message.to]: {
+              last_message: message.cipherSelf,
+              lastMessageId: message.id,
+              isTyping: false,
+              name: message.fromName,
+            },
+          },
+          isFetchingChats: {
+            ...state.isFetchingChats,
+            [message.to]: {
+              isFecthing: false,
+            },
+          },
+          history: {
+            ...state.history,
+          },
+        };
+      }
+
+      state.chatMessages[message.to].messages.unshift(message);
+      state.chatMessages[message.to].lastTimeStamp = message.time;
+      state.chatMessages[message.to].lastMessageId = message.id;
+      state.chats[message.to].last_message = message.cipherSelf;
+      state.chats[message.to].lastMessageId = message.id;
+    })
+    .addCase(sendTransactionHash.fulfilled, (state, action) => {
+      const message = action.payload;
+      console.log(message.cipherSelf);
+      state.chatMessages[message.to].pendingMessages = state.chatMessages[
+        message.to
+      ].pendingMessages.filter((msg) => msg.messageId !== message.messageId);
 
       if (state.chatMessages[message.to] === undefined) {
         return {

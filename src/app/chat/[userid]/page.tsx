@@ -75,6 +75,7 @@ export default function Page({ params }: { params: { userid: string } }) {
       messageType: "private_message",
       messageId: v4(),
       to: params.userid,
+      infoType: "message",
     } as ClientMessage;
     dispatch(sendMessageUsingHttp(message));
     setTextToSend("");
@@ -96,7 +97,10 @@ export default function Page({ params }: { params: { userid: string } }) {
 
   return (
     <div className="h-[88vh] p-4">
-      <Chatnavbar userid={chats[params.userid].name} publicKey={params.userid}/>
+      <Chatnavbar
+        userid={chats[params.userid].name}
+        publicKey={params.userid}
+      />
       <div className="text-white h-full">
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}
@@ -108,13 +112,19 @@ export default function Page({ params }: { params: { userid: string } }) {
                   {value[1].map((msg, index) => {
                     return (
                       <ChatText
+                        type={msg.infoType}
                         sent={msg.to == params.userid}
-                        status={msg.status} 
+                        status={msg.status}
                         text={
                           msg.to == params.userid ? msg.cipherSelf : msg.cipher
                         }
                         time={msg.time}
                         key={index}
+                        value={
+                          msg.infoType == "transaction"
+                            ? msg.cipherSelf
+                            : undefined
+                        }
                       />
                     );
                   })}

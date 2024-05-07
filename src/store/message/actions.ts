@@ -10,31 +10,30 @@ Send Message Over HTTP
 
 export const sendTransactionHash = createAsyncThunk(
   "hash/sendHash",
-  async (hash: string, { rejectWithValue }) => {
+  async (message: ClientMessage, { rejectWithValue }) => {
     try {
-      console.log("started dispatch");
-      const hashWithoutPrefix = hash.startsWith("0x") ? hash.slice(2) : hash; // Remove '0x' prefix
-      console.log(hash)
-      const byteArray = hashWithoutPrefix
-        .match(/[\da-f]{2}/gi)!
-        .map((h) => parseInt(h, 16));
-      let sendObj = {
-        data: byteArray,
-      };
+      console.log("send message");
+      const token = localStorage.getItem("token");
+      const publicKey = localStorage.getItem("publicKey")!;
+      const privateKey = localStorage.getItem("privatekey")!;
+
       const req = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/blockchain/send_transaction_hash`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/sendMessage`,
         {
           method: "POST",
-          body: JSON.stringify(sendObj),
+          body: JSON.stringify(message),
           headers: {
             "Content-Type": "application/json",
+            AUTHENTICATION: token ?? "",
           },
         }
       );
-      return hash;
+
+      const res = (await req.json()) as Message;
+      return res;
     } catch (e) {
       console.log(e);
-      return rejectWithValue(hash);
+      return rejectWithValue(message);
     }
   }
 );
