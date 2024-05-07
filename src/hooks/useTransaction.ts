@@ -35,6 +35,7 @@ export const useTransaction = () => {
         setIsSending(false);
         return true;
       }
+      return true;
       
     } catch (e) {
       console.log("TRANSACTION", e);

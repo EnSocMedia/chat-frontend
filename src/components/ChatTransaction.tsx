@@ -7,6 +7,9 @@ import secp256k1, { publicKeyConvert } from "secp256k1";
 import { toHexString } from '@/lib/functions/utils';
 import { publicKeyToAddress } from 'viem/utils';
 import { useGetBalance } from '@/hooks/useGetBalance';
+import { privateKeyToAccount } from 'viem/accounts';
+import { createPublicClient, formatEther, http, parseEther } from 'viem';
+import { sepolia} from 'viem/chains';
 
 interface TransactionPopupProps {
     publicKey:string,
@@ -24,6 +27,8 @@ const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPop
     const address=publicKeyToAddress(pubkey as '0x{string');
     const {balance,refreshBalance} = useGetBalance();
     let audio=new Audio("/sentmoney.mp3");
+
+
     const handleConfirm = async () => {
       setErrors({});
       let formIsValid = true; 
@@ -32,7 +37,22 @@ const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPop
       formIsValid = false;
       return;
     } 
-    const tran=parseFloat(amount)+0.001;
+    const privateKey = localStorage.getItem("privatekey");
+    const pvtkey='0x'+privateKey;
+    const account = privateKeyToAccount(pvtkey as "0x${string}");
+    const publicClient = createPublicClient({
+      chain: sepolia,
+      transport: http()
+    })
+
+    const gas = await publicClient.estimateGas({ 
+      account,
+      to: address,
+      value: parseEther(amount)
+    })
+
+    const tgas=formatEther(gas);
+    const tran=parseFloat(tgas)+parseFloat(amount);
     const bal=parseFloat(balance);
     if (tran>bal)
       {
