@@ -4,6 +4,9 @@ import React from 'react';
 import {useTransaction} from '@/hooks/useTransaction';
 import { useEffect, useState } from "react";
 import { useGetBalance } from '@/hooks/useGetBalance';
+import { privateKeyToAccount } from 'viem/accounts';
+import { createPublicClient, formatEther, http, parseEther } from 'viem';
+import { sepolia } from 'viem/chains';
 
 interface TransactionPopupProps {
     closeTransactionPopup: () => void;
@@ -24,7 +27,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
       setErrors({});
       let formIsValid = true;
     if (publicKey.length != 42) {
-      setErrors((prevErrors) => ({ ...prevErrors, publicKey: "Public Key is incorrect" }));
+      setErrors((prevErrors) => ({ ...prevErrors, publicKey: "Address is incorrect" }));
       formIsValid = false;
     }    
     if (!amount.trim()) {
@@ -32,7 +35,22 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
       formIsValid = false;
       return;
     }
-    const tran=parseFloat(amount)+0.001;
+    const privateKey = localStorage.getItem("privatekey");
+    const pvtkey='0x'+privateKey;
+    const account = privateKeyToAccount(pvtkey as "0x${string}");
+    const publicClient = createPublicClient({
+      chain: sepolia,
+      transport: http()
+    })
+
+    const gas = await publicClient.estimateGas({ 
+      account,
+      to: publicKey as '0x{string}',
+      value: parseEther(amount)
+    })
+
+    const tgas=formatEther(gas);
+    const tran=parseFloat(tgas)+parseFloat(amount);
     const bal=parseFloat(balance);
     if (tran>bal)
       {
@@ -44,6 +62,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
       if (formIsValid){
         setIsLoading(true);
         const flag=await onSendViem(publicKey, amount);
+        console.log(flag);
         if (flag==true)
           {
             audio.play();
@@ -82,12 +101,12 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
         {/* Render QR code with qrData */}
         {/* Public Key input */}
         <div className="mb-4">
-          <label htmlFor="publicKey" className="block text-white text-sm font-bold mb-2">Public Key</label>
+          <label htmlFor="publicKey" className="block text-white text-sm font-bold mb-2">Address</label>
           <input
             type="text"
             id="publicKey"
             className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-[#313131]/90"
-            placeholder="Enter Public Key"
+            placeholder="Enter wallet address"
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
           />
