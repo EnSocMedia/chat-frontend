@@ -11,9 +11,11 @@ import QRCodePopup from "@/components/QrCode";
 import TransactionPopup from "@/components/Transaction";
 import { useGetWallet } from "@/hooks/useGetWallet";
 import CopyableText from "@/components/CopyableText";
+import { Nft } from "@/types/nft";
+import NftCard from "./NftCard";
 
 // Define the MyComponent
-export default function MyComponent() {
+export default function MyComponent({ nfts }: { nfts: Nft[] }) {
   // State to manage the visibility of the QR code popup and QR data
   const [showQRPopup, setShowQRPopup] = useState(false);
   const [sendTran, setSendTran] = useState(false);
@@ -57,20 +59,24 @@ export default function MyComponent() {
           </div>
         </nav>
 
-        {/* Main content */}
-        <div className="grid grid-rows-1 md:grid-cols-2 gap-5 pt-3">
-          <div className="relative flex flex-col mb-12 overflow-hidden text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
-            <Image
-              src={img1}
-              alt="nature"
-              className="h-[36rem] w-full object-cover object-center"
-            />
+        <div>
+          <h1 className="font-bold  text-[30px] py-2">NFTs</h1>
+          <div className="flex gap-2">
+            {nfts.map((nft, index) => {
+              return (
+                <div key={index}>
+                  <NftCard tradeurl={nft.opensea_url} image={nft.image_url} name={nft.name} />
+                </div>
+              );
+            })}
           </div>
+        </div>
 
+        {/* <div className="grid grid-rows-1 md:grid-cols-2 gap-5 pt-3">
           <div className="gap-5">
             <Cards />
             <div className="grid grid-rows-1  grid-flow-col gap-2 p-3">
-              {/* Deposit button */}
+
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 onClick={generateQRData}
@@ -78,7 +84,6 @@ export default function MyComponent() {
                 Deposit
               </button>
 
-              {/* Send button */}
               <button
                 className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 onClick={showSendTransaction}
@@ -86,12 +91,8 @@ export default function MyComponent() {
                 Send
               </button>
             </div>
-            {/* History component */}
-            {/* <div>
-              <History address={address} />
-            </div> */}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* QR Code Popup */}
@@ -104,7 +105,7 @@ export default function MyComponent() {
       )}
       {/*sendTran && </>*/}
       {/* Footer component */}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
