@@ -96,7 +96,7 @@ export default function Page({ params }: { params: { userid: string } }) {
   console.log("hrouped", groupedMessages);
 
   return (
-    <div className="h-[88vh] p-4">
+    <div className="h-[87vh]">
       <Chatnavbar
         userid={chats[params.userid].name}
         publicKey={params.userid}
@@ -104,7 +104,7 @@ export default function Page({ params }: { params: { userid: string } }) {
       <div className="text-white h-full">
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}
-          <div className="flex gap-2 flex-col overflow-y-scroll">
+          <div className="flex gap-2 flex-col overflow-y-scroll px-8">
             {Object.entries(groupedMessages).map((value, index) => {
               return (
                 <div key={index}>
@@ -112,6 +112,8 @@ export default function Page({ params }: { params: { userid: string } }) {
                   {value[1].map((msg, index) => {
                     return (
                       <ChatText
+                        to={msg.toName}
+                        hash={msg.cipher}
                         type={msg.infoType}
                         sent={msg.to == params.userid}
                         status={msg.status}

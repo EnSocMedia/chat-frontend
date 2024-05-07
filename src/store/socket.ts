@@ -385,57 +385,31 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
 
       state.chatMessages[message.to].pendingMessages.push(msgObj);
     })
-    // .addCase(sendTransactionHash.pending, (state, action) => {
-    //   const message = action.meta.arg;
+    .addCase(sendTransactionHash.pending, (state, action) => {
+      const message = action.meta.arg;
 
-    //   const publicKey = localStorage.getItem("publicKey");
+      const publicKey = localStorage.getItem("publicKey");
 
-    //   const msgObj = {
-    //     id: "",
-    //     cipher: message.cipher,
-    //     from: publicKey,
-    //     messageType: "private_message",
-    //     toName: "Athul",
-    //     fromName: "Rithu",
-    //     status: "Wait",
-    //     time: new Date().getTime(),
-    //     to: message.to,
-    //     messageId: message.messageId,
-    //     infoType: "transaction",
-    //   } as Message;
+      const msgObj = {
+        id: "",
+        cipher: message.cipher,
+        from: publicKey,
+        messageType: "private_message",
+        toName: "Athul",
+        fromName: "Rithu",
+        status: "Wait",
+        time: new Date().getTime(),
+        to: message.to,
+        messageId: message.messageId,
+        infoType: "transaction",
+      } as Message;
 
-    //   if (state.chatMessages[message.to].pendingMessages) {
-    //     state.chatMessages[message.to].pendingMessages.push(msgObj);
-    //   } else {
-    //     state.chatMessages[message.to].pendingMessages = [msgObj];
-    //   }
-    // })
-    // .addCase(sendTransactionHash.fulfilled, (state, action) => {
-    //   const hash = action.payload;
-    //   console.log("Hash inside socket");
-    //   console.log(hash);
-    //   const address = localStorage.getItem("address");
-    //   if (state.history[address!] === undefined) {
-    //     return {
-    //       chatMessages: {
-    //         ...state.chatMessages,
-    //       },
-    //       chats: {
-    //         ...state.chats,
-    //       },
-    //       isFetchingChats: {
-    //         ...state.isFetchingChats,
-    //       },
-    //       history: {
-    //         ...state.history,
-    //         [address!]: {
-    //           transactions: [hash],
-    //         },
-    //       },
-    //     };
-    //   }
-    //   state.history[address!].transactions.unshift(hash);
-    // })
+      if (state.chatMessages[message.to].pendingMessages) {
+        state.chatMessages[message.to].pendingMessages.push(msgObj);
+      } else {
+        state.chatMessages[message.to].pendingMessages = [msgObj];
+      }
+    })
     .addCase(sendMessageUsingHttp.fulfilled, (state, action) => {
       const privateKey = localStorage.getItem("privatekey")!;
       console.log("hello");

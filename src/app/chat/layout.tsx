@@ -45,12 +45,12 @@ export default function Layout({
   return (
     <>
       <Navbar />
-      <div className="grid grid-cols-4 gap-2 h-[91vh] ">
+      <div className="grid grid-cols-4">
         <div className="bg-[#020212] col-span-1">
           <Profile1 name="" />
           <div className="overflow-y-auto overflow-x-hidden h-[85vh] border-b border-gray-40 ">
             <UserSearch />
-            <div className="bg-[#020212] py-4 px-6 border-b border-gray-400">
+            <div className="bg-[#020212]/20 py-4 px-6 border-b border-gray-400">
               <h2 className="text-lg font-semibold">Chats </h2>
             </div>
 
