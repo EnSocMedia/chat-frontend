@@ -666,6 +666,11 @@ export const websocketMiddleware: Middleware = (store) => {
             message: JSON.parse(event.data),
           })
         );
+        if (JSON.parse(messsage).infoType=="transaction")
+          {
+            let recievemoney=new Audio("/recievemoney.mp3");
+            recievemoney.play();
+          }
         break;
       case "TYPING":
         store.dispatch(receiveTypingWithTimeout(JSON.parse(event.data).from));

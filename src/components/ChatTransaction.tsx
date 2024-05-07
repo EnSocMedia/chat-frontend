@@ -55,11 +55,11 @@ const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPop
     }
     };
   return (
-     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="border-4 border-gray-200 border-opacity-25 rounded-full animate-spin w-12 h-12"></div> :<div className="bg-white p-11 rounded-lg relative w-96">
+     <div className="fixed inset-0 flex items-center justify-center bg-[#202020] bg-opacity-50">
+      <div className="border-4 bg-[#202020] border-opacity-25 rounded-full animate-spin w-12 h-12"></div> :<div className="bg-[#202020] p-11 rounded-lg relative w-96">
         {/* Close button */}
         <button 
-          className="absolute top-0 right-0 p-2 text-gray-600 hover:text-gray-900" 
+          className="absolute top-0 right-0 p-2 text-white hover:text-white-900" 
           onClick={closeTransactionPopup}
         >
           <svg 
@@ -79,16 +79,16 @@ const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPop
         </button>
         {/* Amount input */}
         <div className="mb-6">
-          <label htmlFor="amount" className="block text-gray-700 text-sm font-bold mb-2">Amount</label>
+          <label htmlFor="amount" className="block text-white text-sm font-bold mb-2">Amount</label>
           <input
             type="text"
             id="amount"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-[#313131]/90"
             placeholder="Enter Amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
-          <div className='flex justify-end text-sm text-black'>{balance}</div>
+          <div className='flex justify-end text-sm text-white pt-3'>{balance}</div>
           {errors.amount && <p className="text-red-500 text-xs italic">{errors.amount}</p>}
         </div>
         {/* Confirm button */}

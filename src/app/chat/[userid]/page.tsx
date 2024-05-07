@@ -83,7 +83,12 @@ export default function Page({ params }: { params: { userid: string } }) {
     setTextToSend("");
     toggle();
   }
-
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      messageSendHandler();
+    }
+  };
+  
   const groupedMessages = useMemo(() => {
     if (messages[params.userid]?.messages) {
       return groupBy(
@@ -158,6 +163,7 @@ export default function Page({ params }: { params: { userid: string } }) {
                 sendTypingInfo(params.userid);
                 setTextToSend(e.target.value);
               }}
+              onKeyPress={handleKeyPress}
               type="text"
               className="text-black bg-red w-full rounded-md"
             />

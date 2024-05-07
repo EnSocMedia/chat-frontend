@@ -27,24 +27,24 @@ function ProfileModal({ onClose }: ProfileProps) {
         </span>
 
         <div
-          className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          className="inline-block align-bottom bg-[#202020] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-headline"
         >
-          <div className="max-w-lg mx-auto my-10 bg-white rounded-lg shadow-md p-5">
+          <div className="max-w-lg mx-auto my-10 bg-[#202020] rounded-lg shadow-md p-5">
             <Image
               className="w-32 h-32 rounded-full mx-auto"
               src={man}
               alt="Profile picture"
             />
-            <h2 className="text-center text-gray-600 mt-1">{name}</h2>
-            <p className="text-center text-gray-600 mt-1">Address:{address}</p>
-            <p className="text-center text-gray-600 mt-1">
+            <h2 className="text-center text-white-600 mt-1">{name}</h2>
+            <p className="text-center text-white-600 mt-1">Address:{address}</p>
+            <p className="text-center text-white-600 mt-1">
               Balance : {balance}
             </p>
           </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div className="bg-[#202020] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button
               onClick={onClose}
               type="button"
