@@ -46,7 +46,7 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
     <div className="grid min-h-[140px] w-full place-items-center overflow-x-scroll rounded-lg p-9 lg:overflow-visible">
       <div className="-m-6 max-h-[768px] w-[calc(100%+48px)] overflow-scroll">
         {/* Navigation bar */}
-        <nav className="sticky top-0 z-10 grid justify-items-center w-full max-w-full px-4 py-2 text-white h-max  lg:px-8 lg:py-4">
+        <nav className="grid justify-items-center w-full max-w-full px-4 py-2 text-white h-max  lg:px-8 lg:py-4">
           <div className="flex flex-col items-center">
             <div className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white text-center">
               Welcome to Wallet page !!
@@ -66,6 +66,7 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
               return (
                 <div key={index}>
                   <NftCard
+                    collectionName={nft.collection}
                     tradeurl={nft.opensea_url}
                     image={nft.image_url}
                     name={nft.name}
@@ -76,7 +77,7 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <h1 className="font-bold  text-[30px] py-2">Tokens</h1>
           <table className="w-full">
             <thead>
@@ -96,29 +97,28 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
               </tr>
             </tbody>
           </table>
-        </div>
-
-        {/* <div className="grid grid-rows-1 md:grid-cols-2 gap-5 pt-3">
-          <div className="gap-5">
+        </div> */}
+        <h1 className="font-bold  text-[30px] py-2 pt-4">Tokens</h1>
+        <div className="grid grid-rows-1 md:grid-cols-2 gap-5 pt-3">
+          <div className="gap-5 w-[350px]">
             <Cards />
-            <div className="grid grid-rows-1  grid-flow-col gap-2 p-3">
-
+            <div className="grid grid-rows-1  grid-flow-col gap-2 pt-4">
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-blue-500 hover:bg-blue-700 text-white transition-all duration-300 font-bold py-2 px-4 rounded"
                 onClick={generateQRData}
               >
                 Deposit
               </button>
 
               <button
-                className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-red-500 hover:bg-red-700 transition-all duration-300 text-white font-bold py-2 px-4 rounded"
                 onClick={showSendTransaction}
               >
                 Send
               </button>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
 
       {!sendTran && showQRPopup && <QRCodePopup closeQRPopup={closeQRPopup} />}
