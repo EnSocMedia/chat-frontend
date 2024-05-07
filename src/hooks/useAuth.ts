@@ -46,10 +46,16 @@ export const useAuth = () => {
     }
   };
 
+  const logOut = async () => {
+    localStorage.clear();
+    router.push("/");
+  };
+
   return {
     onUserRegister,
     onUserLogin,
     isRegistering,
+    logOut,
     isLogging,
   };
 };
