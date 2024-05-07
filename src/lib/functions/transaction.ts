@@ -20,7 +20,8 @@ export const onSendingViem = async (address: string, amount: string) => {
 
   const privateKey = localStorage.getItem("privatekey");
   if (privateKey !== null) {
-    const account = privateKeyToAccount(privateKey as "0x${string}");
+    const pvtkey='0x'+privateKey;
+    const account = privateKeyToAccount(pvtkey as "0x${string}");
     const request = await client.prepareTransactionRequest({
       account,
       to: address as "0x${string}",
