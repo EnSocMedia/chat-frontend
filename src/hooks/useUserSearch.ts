@@ -18,7 +18,7 @@ export const useUserSearch = (searchParam: string) => {
         name: searchParam,
       }),
     });
-
+    console.log(req)
     const res = (await req.json()) as { name: string; publicKey: string }[];
     setUsers(res);
   };
@@ -28,4 +28,4 @@ export const useUserSearch = (searchParam: string) => {
   }, [searchParam]);
 
   return { users };
-};
+};;

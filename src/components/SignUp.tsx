@@ -3,6 +3,7 @@ import generateMnemonicWords from "@/lib/words-algo/wordsGen";
 import { sha256 } from "@noble/hashes/sha256";
 import { useRef, useState } from "react";
 import DashRow from "./Dashrow";
+import CopyableText from "./CopyableText";
 
 interface SignUpProps {
   onRegister: (privateKey: Uint8Array,name:string) => Promise<void>;
@@ -12,6 +13,7 @@ interface SignUpProps {
 export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
   const { isGenerating, mnemonic } = useGenerateMnemonic();
   console.log(mnemonic.join(" "));
+  const mnesen=mnemonic.join(" ");
   const [userName, setUserName] = useState("");
   async function registerHandler() {
     const privateKeyBuffer =  sha256(mnemonic.join(" "));
@@ -69,9 +71,13 @@ export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
         >
           Create Account
         </button>
+        
       </div>
+      <div className="text-lg text-bold font-medium">Your Mnemonic</div>
+      <CopyableText text={mnesen} />
       </div>
       <div className="flex items-center">
+      
   <div className="flex-1 border-t-2 border-white"></div>
   <DashRow/>
   <div className="flex-1 border-t-2 border-white"></div>
