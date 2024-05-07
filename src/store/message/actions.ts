@@ -1,4 +1,3 @@
-
 import { decrypt, encrypt } from "@/lib/ecies";
 import { toHexString } from "@/lib/functions/utils";
 import { ClientMessage, Message } from "@/types/message";
@@ -11,23 +10,29 @@ Send Message Over HTTP
 
 export const sendTransactionHash = createAsyncThunk(
   "hash/sendHash",
-  async (hash:string, {rejectWithValue}) => {
-    try{
+  async (hash: string, { rejectWithValue }) => {
+    try {
       console.log("started dispatch");
-      const hashWithoutPrefix = hash.startsWith('0x') ? hash.slice(2) : hash; // Remove '0x' prefix
-      const byteArray = hashWithoutPrefix.match(/[\da-f]{2}/gi)!.map(h => parseInt(h, 16));
+      const hashWithoutPrefix = hash.startsWith("0x") ? hash.slice(2) : hash; // Remove '0x' prefix
+      console.log(hash)
+      const byteArray = hashWithoutPrefix
+        .match(/[\da-f]{2}/gi)!
+        .map((h) => parseInt(h, 16));
       let sendObj = {
         data: byteArray,
       };
-      const req = await fetch("http://172.18.203.111:3011/blockchain/send_transaction_hash", {
-    method: "POST",
-    body: JSON.stringify(sendObj),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return hash;
-    }catch (e) {
+      const req = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/blockchain/send_transaction_hash`,
+        {
+          method: "POST",
+          body: JSON.stringify(sendObj),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return hash;
+    } catch (e) {
       console.log(e);
       return rejectWithValue(hash);
     }
@@ -64,7 +69,7 @@ export const sendMessageUsingHttp = createAsyncThunk(
       messageToSend.cipherSelf = toHexString(encryptedMessageForSelf);
 
       const req = await fetch(
-        "http://172.18.203.111:3011/sendMessage",
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/sendMessage`,
         {
           method: "POST",
           body: JSON.stringify(messageToSend),
@@ -135,6 +140,4 @@ export const getMessagesOnBootstrap = createAsyncThunk(
 
     return { messages: res };
   }
-
-
 );

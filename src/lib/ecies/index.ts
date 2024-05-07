@@ -12,7 +12,8 @@ import {
 
 export function encrypt(
   receiverRawPK: string | Uint8Array,
-  msg: Uint8Array
+  msg: Uint8Array,
+  secret?:Uint8Array
 ): Buffer {
   //Generate a random private Key
   const ephemeralKey = new PrivateKey();

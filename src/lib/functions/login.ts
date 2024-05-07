@@ -8,13 +8,10 @@ export const onLogin = async (privateKey: Uint8Array) => {
   let hash = createHash("sha256").update(msg).digest("hex");
 
   // get the public key in a compressed format
-  const pubKey = secp256k1.publicKeyCreate(privateKey);
+  const pubKey = secp256k1.publicKeyCreate(privateKey,false);
 
   // sign the message
   const sigObj = secp256k1.ecdsaSign(fromHexString(hash), privateKey);
-  console.log("publickey");
-  console.log(toHex(pubKey));
-  console.log(sigObj);
 
   let sendObj = {
     pub_key: toHexString(pubKey),
@@ -22,7 +19,7 @@ export const onLogin = async (privateKey: Uint8Array) => {
     message: msg,
   };
 
-  const req = await fetch("http://172.18.203.111:3011/login", {
+  const req = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/login`, {
     method: "POST",
     body: JSON.stringify(sendObj),
     headers: {

@@ -1,10 +1,10 @@
-  import { getRandomValues } from "node:crypto";
+
 import { decToBin } from "./conversion";
 
 function entropyGenerator() {
   const arr = new Uint8Array(16);
 
-  getRandomValues(arr);
+  crypto.getRandomValues(arr);
 
   let randomBit = "";
 

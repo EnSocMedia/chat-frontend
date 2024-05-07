@@ -1,5 +1,4 @@
 import { Ewert } from "next/font/google";
-import crypto from "node:crypto";
 function decToBin(dec: number, len = 8) {
   let r;
   let binary = "";

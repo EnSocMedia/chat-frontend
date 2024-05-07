@@ -12,8 +12,9 @@ export const onsendingRawTransaction = async (
         chain: mainnet,
         transport: http(),
     });
-
-    const privateKey = localStorage.getItem("privateKey");
+    console.log("Helloooo")
+    const privateKey = localStorage.getItem("privatekey");
+    console.log("rpviuate",privateKey)
     if (privateKey !== null) {
         console.log("Raw transaction");
         const account = privateKeyToAccount(privateKey as "0x${string}");
@@ -36,7 +37,7 @@ export const onsendingRawTransaction = async (
         }
         const bodydata=RLP.encode(JSON.stringify(data1));
 
-        const req = await fetch("http://172.18.203.111:3011/send_transaction", {
+        const req = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/send_transaction`, {
             method: "POST",
             body: bodydata,
             headers: {

@@ -16,6 +16,7 @@ export default function SignUp({ onRegister,setsignin  }: SignUpProps) {
   const mnesen=mnemonic.join(" ");
   const [userName, setUserName] = useState("");
   async function registerHandler() {
+    console.log("Sign up mnemonic",mnemonic)
     const privateKeyBuffer =  sha256(mnemonic.join(" "));
 
     await onRegister(privateKeyBuffer,userName);
