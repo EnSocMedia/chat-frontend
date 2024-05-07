@@ -7,7 +7,7 @@ export const useNFTs = () => {
 
   const getNFTs = async () => {
     const req = await fetch(
-      `https://testnets-api.opensea.io/api/v2/chain/sepolia/account/0xa7a0a01ec000cf704be944fe368b369e22fd1b13/nft`,
+      `https://testnets-api.opensea.io/api/v2/chain/sepolia/account/${address}/nft`,
       {
         headers: {
           "Content-Type": "application/json",
