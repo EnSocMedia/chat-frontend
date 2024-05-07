@@ -44,6 +44,15 @@ const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPop
       chain: sepolia,
       transport: http()
     })
+    console.log(address);
+    const bal=parseFloat(balance);
+    const amo=parseFloat(amount);
+    if (amo>bal)
+    {
+        setErrors((prevErrors)=>({...prevErrors,amount:"Amount is not sufficient"}))
+        formIsValid=false;
+        return;
+    }
 
     const gas = await publicClient.estimateGas({ 
       account,
@@ -53,7 +62,9 @@ const ChatTransactionPopup = ({publicKey,closeTransactionPopup }: TransactionPop
 
     const tgas=formatEther(gas);
     const tran=parseFloat(tgas)+parseFloat(amount);
-    const bal=parseFloat(balance);
+    
+    console.log(bal);
+    console.log(tran);
     if (tran>bal)
       {
         console.log(parseFloat(amount)-0.001);

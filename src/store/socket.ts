@@ -672,6 +672,10 @@ export const websocketMiddleware: Middleware = (store) => {
             message: JSON.parse(event.data),
           })
         );
+        if (JSON.parse(messsage).infoType=="message"){
+          let recmsgaud=new Audio("/receivemessage.mp3")
+          recmsgaud.play();
+        }
         if (JSON.parse(messsage).infoType == "transaction") {
           let recievemoney = new Audio("/recievemoney.mp3");
           recievemoney.play();
