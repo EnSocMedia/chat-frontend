@@ -17,7 +17,7 @@ import { websocketConnect } from "@/store/socket";
 import { ClientMessage, Message } from "@/types/message";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { text } from "stream/consumers";
 import { v4 } from "uuid";
@@ -65,9 +65,9 @@ export default function Page({ params }: { params: { userid: string } }) {
   const [textToSend, setTextToSend] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    dispatch(websocketConnect());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(websocketConnect());
+  // }, []);
 
   function messageSendHandler() {
     const message = {
@@ -84,19 +84,30 @@ export default function Page({ params }: { params: { userid: string } }) {
     toggle();
   }
 
+  const groupedMessages = useMemo(() => {
+    if (messages[params.userid]?.messages) {
+      return groupBy(
+        messages[params.userid].messages
+          .concat(messages[params.userid].pendingMessages)
+          .sort(sortByTime),
+        "time"
+      );
+    } else {
+      return {};
+    }
+  }, [messages, params.userid]);
+
+  useEffect(() => {
+    var elem = document.getElementById("chatdata");
+    if (elem) {
+      elem.scrollTop = elem.scrollHeight;
+    }
+  }, [groupedMessages]);
+
   if (!chats[params.userid]?.name) {
     router.push("/chat");
     return;
   }
-
-  const groupedMessages = groupBy(
-    messages[params.userid].messages
-      .concat(messages[params.userid].pendingMessages)
-      .sort(sortByTime),
-    "time"
-  );
-
-  console.log("hrouped", groupedMessages);
 
   return (
     <div className="h-[94vh]">
@@ -107,7 +118,10 @@ export default function Page({ params }: { params: { userid: string } }) {
       <div className="text-white h-full">
         <div className="h-full flex flex-col justify-end gap-4">
           {isFetching && <div>Fetching</div>}
-          <div className="flex gap-2 flex-col overflow-y-scroll px-8">
+          <div
+            id="chatdata"
+            className="flex gap-2 flex-col overflow-y-scroll px-8"
+          >
             {Object.entries(groupedMessages).map((value, index) => {
               return (
                 <div key={index}>
@@ -137,7 +151,7 @@ export default function Page({ params }: { params: { userid: string } }) {
               );
             })}
           </div>
-          <div className="w-full flex gap-2 pb-4 px-10">
+          <div className="w-full flex gap-2 pb-4 px-10 !pl-8">
             <input
               value={textToSend}
               onChange={(e) => {

@@ -44,8 +44,7 @@ export default function Layout({
 
   return (
     <>
-      {/* <Navbar /> */}
-      <div className="grid grid-cols-4 h-[100vh]">
+      <div className="grid grid-cols-4 h-[100vh] relative">
         <div className="bg-[#202020] col-span-1">
           <h1 className="font-bold text-center text-[20px] pt-4">Chats</h1>
           <div className="overflow-y-auto overflow-x-hidden ">
@@ -57,7 +56,10 @@ export default function Layout({
                   isTyping = chat.isTyping;
                 }
                 return (
-                  <div key={publicKey} className="border-b-[0.1px] border-gray-500/20">
+                  <div
+                    key={publicKey}
+                    className="border-b-[0.1px] border-gray-500/20"
+                  >
                     <div className="rounded-none  p-y-2">
                       <li
                         className="py-4  hover:bg-[#313131]/20 "
@@ -106,6 +108,9 @@ export default function Layout({
           {/* <div className="pt-2">
             {/* <Profile name="Athul" publicKey={publicKey!} /> */}
           {/* </div> */}
+            {/* <div className="absolute bottom-0 flex w-full">
+              <Navbar />
+            </div> */}
         </div>
         <div className="col-span-3">{children}</div>
       </div>

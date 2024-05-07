@@ -151,7 +151,11 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
           ...state.chats,
           [sender_key]: {
             last_message:
-              public_key == sender_key ? message.cipherSelf : message.cipher,
+              message.infoType == "transaction"
+                ? "Payment"
+                : public_key == sender_key
+                ? message.cipherSelf
+                : message.cipher,
             name: message.fromName,
             lastMessageId: message.id,
             isTyping: false,
@@ -357,7 +361,8 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         };
 
         foo.chats[sender_key] = {
-          last_message: cipherSelf,
+          last_message:
+            message.infoType == "transaction" ? "Payment" : cipherSelf,
           lastMessageId: message.messageId,
           isTyping: false,
           name: toName,
