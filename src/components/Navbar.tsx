@@ -62,7 +62,7 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-      {isProfileModalOpen && <ProfileModal onClose={closeProfileModal} />}
+      {isProfileModalOpen && <ProfileModal name="" onClose={closeProfileModal} />}
     </div>
   );
 }

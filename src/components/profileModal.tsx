@@ -1,25 +1,28 @@
 import React, { useState } from "react";
-import man from '../components/Wallet/4x/man.png'
+import man from "../components/Wallet/4x/man.png";
 
 import Image from "next/image";
 import { useGetWallet } from "@/hooks/useGetWallet";
 import { useGetBalance } from "@/hooks/useGetBalance";
 interface ProfileProps {
-    name: string;
-  }
-function ProfileModal({ onClose },{}: ProfileProps) {
-    const { address } = useGetWallet();
-    const [name,setName]=useState("");
-    const {balance,refreshBalance} = useGetBalance();
+  name: string;
+  onClose: any;
+}
+function ProfileModal({ onClose }: ProfileProps) {
+  const { address } = useGetWallet();
+  const [name, setName] = useState("");
+  const { balance, refreshBalance } = useGetBalance();
   return (
-    
     <div className="fixed z-10 inset-0 overflow-y-auto">
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
 
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+        <span
+          className="hidden sm:inline-block sm:align-middle sm:h-screen"
+          aria-hidden="true"
+        >
           &#8203;
         </span>
 
@@ -35,10 +38,11 @@ function ProfileModal({ onClose },{}: ProfileProps) {
               src={man}
               alt="Profile picture"
             />
-            <h2  className="text-center text-gray-600 mt-1">{name}</h2>
+            <h2 className="text-center text-gray-600 mt-1">{name}</h2>
             <p className="text-center text-gray-600 mt-1">Address:{address}</p>
-            <p className="text-center text-gray-600 mt-1">Balance : {balance}</p>
-
+            <p className="text-center text-gray-600 mt-1">
+              Balance : {balance}
+            </p>
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button

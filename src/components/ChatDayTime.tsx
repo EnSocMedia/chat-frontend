@@ -1,5 +1,4 @@
 import { getDateFromTimestamp } from "@/lib/functions/moment";
-import { getNft } from "@/lib/functions/nft";
 import { useEffect } from "react";
 
 export default function ChatDayTime({ time }: { time: number }) {
@@ -8,9 +7,6 @@ export default function ChatDayTime({ time }: { time: number }) {
   const day = formatterDay.format(new Date(time));
   const month = formatter.format(new Date(time));
 
-  useEffect(() => {
-    getNft();
-  }, []);
   return (
     <div className="flex justify-center">
       <div className=" py-2">
