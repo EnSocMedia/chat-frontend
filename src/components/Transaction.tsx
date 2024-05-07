@@ -3,6 +3,7 @@
 import React from 'react';
 import {useTransaction} from '@/hooks/useTransaction';
 import { useEffect, useState } from "react";
+import { useGetBalance } from '@/hooks/useGetBalance';
 
 interface TransactionPopupProps {
     closeTransactionPopup: () => void;
@@ -16,10 +17,10 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
     const [selectedOption, setSelectedOption] = useState<string>("option1");
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isLoading, setIsLoading]= useState(false);
-
+    const {balance,refreshBalance} = useGetBalance();
 
     const handleConfirm = async () => {
-      
+    let audio=new Audio("/sentmoney.mp3");
       setErrors({});
       let formIsValid = true;
     if (publicKey.length != 42) {
@@ -29,19 +30,29 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
     if (!amount.trim()) {
       setErrors((prevErrors) => ({ ...prevErrors, amount: "Amount is required" }));
       formIsValid = false;
+      return;
     }
-      if (formIsValid){
-      if (selectedOption === "option1") {
-        setIsLoading(true);
-        console.log("settrue");
-        await onSendViem(publicKey, amount);
-        console.log("setfalse");
-        setIsLoading(false);
-      } else {
-        console.log("option2");
-        onSendRawTransaction(publicKey, amount);
+    const tran=parseFloat(amount)+0.001;
+    const bal=parseFloat(balance);
+    if (tran>bal)
+      {
+        console.log(parseFloat(amount)-0.001);
+        console.log(parseFloat(balance));
+        setErrors((prevErrors)=>({...prevErrors,amount:"Amount is not sufficient"}))
+        formIsValid=false;
       }
-      setIsLoading(false);
+      if (formIsValid){
+        setIsLoading(true);
+        const flag=await onSendViem(publicKey, amount);
+        if (flag==true)
+          {
+            audio.play();
+            alert("Payment sent");
+            setIsLoading(false);
+            closeTransactionPopup();
+          }
+
+        setIsLoading(false);
     }
     setIsLoading(false);
     };
@@ -93,32 +104,9 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
+          <div className='flex justify-end text-sm text-black'>{balance}</div>
           {errors.amount && <p className="text-red-500 text-xs italic">{errors.amount}</p>}
         </div>
-        {/* <div className="mb-6 flex justify-between">
-          <div>
-            <input
-              type="radio"
-              id="option1"
-              name="option"
-              value="option1"
-              checked={selectedOption === "option1"}
-              onChange={() => setSelectedOption("option1")}
-            />
-            <label htmlFor="option1" className="ml-2 text-black">Send via Client    </label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              id="option2"
-              name="option"
-              value="option2"
-              checked={selectedOption === "option2"}
-              onChange={() => setSelectedOption("option2")}
-            />
-            <label htmlFor="option2" className="ml-2 text-black">Send via Server    </label>
-          </div>
-        </div> */}
         {/* Confirm button */}
         <div className="flex justify-center">
         { !isLoading ? <button

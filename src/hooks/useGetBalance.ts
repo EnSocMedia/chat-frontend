@@ -17,9 +17,6 @@ export const useGetBalance = () => {
     const bala = await publicClient.getBalance({
       address: address,
     });
-    console.log(bala);
-    console.log("balance");
-    console.log(formatEther(bala));
     const bal = formatEther(bala).substring(0, 7);
     setBalance(bal);
   };

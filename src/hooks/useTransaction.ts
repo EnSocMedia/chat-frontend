@@ -32,8 +32,10 @@ export const useTransaction = () => {
         };
         //console.log(toHexString(hash));
         dispatch(sendTransactionHash(messagePayload));
+        setIsSending(false);
+        return true;
       }
-      setIsSending(false);
+      
     } catch (e) {
       console.log("TRANSACTION", e);
       setIsSending(false);
