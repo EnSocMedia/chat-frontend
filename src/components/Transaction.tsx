@@ -95,7 +95,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
           />
           {errors.amount && <p className="text-red-500 text-xs italic">{errors.amount}</p>}
         </div>
-        <div className="mb-6 flex justify-between">
+        {/* <div className="mb-6 flex justify-between">
           <div>
             <input
               type="radio"
@@ -118,7 +118,7 @@ const TransactionPopup = ({closeTransactionPopup }: TransactionPopupProps) => {
             />
             <label htmlFor="option2" className="ml-2 text-black">Send via Server    </label>
           </div>
-        </div>
+        </div> */}
         {/* Confirm button */}
         <div className="flex justify-center">
         { !isLoading ? <button
