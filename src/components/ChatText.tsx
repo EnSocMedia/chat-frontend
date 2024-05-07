@@ -90,7 +90,11 @@ export default function ChatText({
   } else {
     return (
       <div className={`flex ${sent ? "justify-end" : "justify-start"} my-2 `}>
-        <div className=" p-4 rounded-lg w-[25%] bg-[#9400FF]">
+        <div
+          className={`p-4 rounded-lg w-[25%] ${
+            sent ? "bg-[#9400FF]" : "bg-[#202020]"
+          }`}
+        >
           <h1 className="font-bold text-[16px]">Payment To {to} </h1>
           <div className="text-[24px]">{value} ETH</div>
           <div className="text-[14px]">

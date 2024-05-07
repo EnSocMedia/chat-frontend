@@ -34,51 +34,25 @@ export default function UserSearch() {
   }
 
   return (
-    <div>
-      <div className="flex ">
-        <div className="flex-col px-0.5">
-          <div className="py-4 px-6 border-gray-400">
-            <div className="w-full pt-2">
-              <div className="relative w-full">
-                {/* <svg
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-4.685-4.686M15.47 9.882A5.999 5.999 0 1 1 9.883 15.47 5.999 5.999 0 0 1 15.47 9.882zM5 11a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"
-                  ></path>
-                </svg> */}
-              </div>
-            </div>
-          </div>
-          <input
-            value={textToSearch}
-            type="text"
-            className="text-black pl-5 py-2 px-40   rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
-            onChange={searchInputHandler}
-            placeholder="Search Users"
-          />
-        </div>
-
-        {/* <button className="p-2 rounded-md bg-blue-800 text-white hover:bg-blue-600 focus:outline-none">
-          <SearchIcon />
-        </button> */}
+    <div className="pt-2">
+      <div className="flex px-2 ">
+        <input
+          value={textToSearch}
+          type="text"
+          className="text-white pl-5 py-1 bg-[#313131]/90 w-full rounded-sm placeholder:text-[13px] focus:outline-none focus:border-blue-500"
+          onChange={searchInputHandler}
+          placeholder="Search Users"
+        />
       </div>
-      <div className="w-full">
-        <div className="bg-[#153448] flex flex-col gap-2 ">
+      <div className="w-full px-2">
+        <div className="bg-[#313131]/20 flex flex-col gap-2 ">
           {users.map((user, index) => (
             <div
+              className="cursor-pointer"
               key={user.publicKey}
               onClick={() => onClick(user.publicKey, user.name)}
             >
-              <div className="flex items-center p-2 hover:bg-gray-100 hover:text-blue-600 relative">
-                <div className="absolute bottom-0 left-0 w-full h-px bg-white"></div>
+              <div className="flex items-center p-2 relative hover:bg-[#313131]/20 border-b-[0.1px] border-gray-500/80 ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -100,7 +74,7 @@ export default function UserSearch() {
           ))}
         </div>
         <div className="py-2">
-          <div className="bg-white h-0.5 w-full"></div>
+          <div className="bg-gray-500 h-0.5 w-full"></div>
         </div>
       </div>
     </div>

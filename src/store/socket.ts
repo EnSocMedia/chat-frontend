@@ -111,11 +111,13 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
 
       if (public_key == sender_key) {
         sender_key = message.to;
-        message.cipherSelf = decrypt(
-          privateKey,
-          Buffer.from(message.cipherSelf, "hex")
-        ).toString("ascii");
-      } else {
+        if (message.infoType == "message") {
+          message.cipherSelf = decrypt(
+            privateKey,
+            Buffer.from(message.cipherSelf, "hex")
+          ).toString("ascii");
+        }
+      } else if (message.infoType == "message") {
         message.cipher = decrypt(
           privateKey,
           Buffer.from(message.cipher, "hex")
@@ -327,7 +329,6 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
         let toName = message.toName;
         let cipherSelf = message.cipherSelf;
         if (public_key.toLowerCase() == sender_key.toLowerCase()) {
-          console.log("Same");
           sender_key = message.to;
           if (message.infoType == "message") {
             message.cipherSelf = decrypt(
@@ -595,35 +596,41 @@ export const websocketSlice = createReducer<Messages>(initialState, (builder) =>
     .addCase(
       createStateForNewUser,
       (state, { payload: { name, publicKey } }) => {
-        return {
-          chats: {
-            ...state.chats,
-            [publicKey]: {
-              name: name,
-              last_message: "",
-              isTyping: false,
-              lastMessageId: "",
+        if (!state.chats[publicKey]) {
+          return {
+            chats: {
+              ...state.chats,
+              [publicKey]: {
+                name: name,
+                last_message: "",
+                isTyping: false,
+                lastMessageId: "",
+              },
             },
-          },
-          chatMessages: {
-            ...state.chatMessages,
-            [publicKey]: {
-              lastMessageId: "",
-              lastTimeStamp: 343,
-              messages: [] as Message[],
-              pendingMessages: [] as Message[],
+            chatMessages: {
+              ...state.chatMessages,
+              [publicKey]: {
+                lastMessageId: "",
+                lastTimeStamp: 343,
+                messages: [] as Message[],
+                pendingMessages: [] as Message[],
+              },
             },
-          },
-          isFetchingChats: {
-            ...state.isFetchingChats,
-            [publicKey]: {
-              isFecthing: false,
+            isFetchingChats: {
+              ...state.isFetchingChats,
+              [publicKey]: {
+                isFecthing: false,
+              },
             },
-          },
-          history: {
-            ...state.history,
-          },
-        };
+            history: {
+              ...state.history,
+            },
+          };
+        } else {
+          return {
+            ...state,
+          };
+        }
       }
     )
 );

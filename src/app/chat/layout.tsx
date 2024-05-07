@@ -48,7 +48,7 @@ export default function Layout({
       <div className="grid grid-cols-4 h-[100vh]">
         <div className="bg-[#202020] col-span-1">
           <h1 className="font-bold text-center text-[20px] pt-4">Chats</h1>
-          <div className="overflow-y-auto overflow-x-hidden border-b border-gray-40 ">
+          <div className="overflow-y-auto overflow-x-hidden ">
             <UserSearch />
             <ul>
               {Object.entries(chats).map(([publicKey, chat]) => {
@@ -57,15 +57,15 @@ export default function Layout({
                   isTyping = chat.isTyping;
                 }
                 return (
-                  <div key={publicKey}>
-                    <div className="rounded-none border-b-2 border-[#30323E] p-y-2 ">
+                  <div key={publicKey} className="border-b-[0.1px] border-gray-500/20">
+                    <div className="rounded-none  p-y-2">
                       <li
-                        className="py-4"
+                        className="py-4  hover:bg-[#313131]/20 "
                         onClick={() => {
                           router.push(`/chat/${publicKey}`);
                         }}
                       >
-                        <div className="flex items-center user-item cursor-pointer hover:bg-gray-100 hover:text-blue-600">
+                        <div className="flex items-center user-item cursor-pointer ">
                           {/* User Icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
