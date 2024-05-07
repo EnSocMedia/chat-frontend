@@ -134,7 +134,7 @@ export default function Page({ params }: { params: { userid: string } }) {
               );
             })}
           </div>
-          <div className="w-full flex gap-2 pb-4">
+          <div className="w-full flex gap-2 pb-4 px-8">
             <input
               value={textToSend}
               onChange={(e) => {

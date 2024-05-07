@@ -46,7 +46,7 @@ export default function Layout({
     <>
       <Navbar />
       <div className="grid grid-cols-4">
-        <div className="bg-[#020212] col-span-1">
+        <div className="bg-[#313131] col-span-1">
           <Profile1 name="" />
           <div className="overflow-y-auto overflow-x-hidden h-[85vh] border-b border-gray-40 ">
             <UserSearch />

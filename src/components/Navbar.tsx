@@ -18,7 +18,7 @@ export default function Navbar() {
     <div>
       <nav
         className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-600"
-        style={{ backgroundColor: "#074173" }}
+        style={{ backgroundColor: "#202020" }}
       >
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="#" className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -32,11 +32,11 @@ export default function Navbar() {
             className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
             id="navbar-sticky"
           >
-            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-[#10439F] rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-[#10439F] md:dark:bg-[#074173] dark:border-gray-700">
+            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border  rounded-lg  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
               <li>
                 <a
                   href="/chat"
-                  className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-white"
+                  className="block py-2 px-3 text-white rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-white"
                   aria-current="page"
                 >
                   Chat

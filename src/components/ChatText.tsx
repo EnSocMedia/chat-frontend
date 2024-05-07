@@ -67,7 +67,7 @@ export default function ChatText({
       <div className={`flex ${sent ? "justify-end" : "justify-start"} p-2 `}>
         <div
           className={`${
-            sent ? "bg-blue-500" : "bg-gray-200 text-black"
+            sent ? "bg-[#31363F]" : "bg-gray-200 text-black"
           } p-2 rounded-lg inline-block gap-1 flex items-center`}
         >
           <div>{text}</div>
