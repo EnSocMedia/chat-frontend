@@ -15,7 +15,6 @@ export const symDecrypt = (key: Uint8Array, cipherText: Uint8Array): Uint8Array 
   _exec(false, key, cipherText);
 
 export const deriveKey = (master: Uint8Array): Uint8Array =>
-  // 32 bytes shared secret for aes256 and xchacha20 derived from HKDF-SHA256
   hkdf(sha256, master, undefined, undefined, 32);
 
 function _exec(is_encryption: boolean, key: Uint8Array, data: Uint8Array): Uint8Array {
@@ -26,7 +25,6 @@ function _exec(is_encryption: boolean, key: Uint8Array, data: Uint8Array): Uint8
   } else if (algorithm === "xchacha20") {
     return callback(xchacha20, key, data, XCHACHA20_NONCE_LENGTH);
   } else if (algorithm === "aes-256-cbc") {
-    // aes-256-cbc is always 16 bytes iv and there is no AEAD tag
     return callback(aes256cbc, key, data, 16, 0);
   } else {
     throw new Error("Not implemented");
@@ -42,7 +40,7 @@ function _encrypt(
 ): Uint8Array {
   const nonce = randomBytes(nonceLength);
   const cipher = func(key, nonce);
-  const ciphered = cipher.encrypt(plainText); // encrypted || tag
+  const ciphered = cipher.encrypt(plainText); 
 
   const encrypted = ciphered.subarray(0, ciphered.length - tagLength);
   const tag = ciphered.subarray(ciphered.length - tagLength);
@@ -61,7 +59,7 @@ function _decrypt(
   const tag = cipherText.subarray(nonceLength, nonceTagLength);
   const encrypted = cipherText.subarray(nonceTagLength);
 
-  const decipher = func(key, Uint8Array.from(nonce)); // to reset byteOffset
+  const decipher = func(key, Uint8Array.from(nonce)); 
   const ciphered = concatBytes(encrypted, tag);
   return decipher.decrypt(ciphered);
 }

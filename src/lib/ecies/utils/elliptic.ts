@@ -9,8 +9,6 @@ import { decodeHex } from "./hex";
 import { deriveKey } from "./symmetric";
 
 export const isValidPrivateKey = (secret: Uint8Array): boolean =>
-  // on secp256k1: only key ∈ (0, group order) is valid
-  // on curve25519: any 32-byte key is valid
   _exec(
     (curve) => curve.utils.isValidPrivateKey(secret),
     () => true,
@@ -46,7 +44,6 @@ export const getSharedPoint = (
     (curve) => curve.getSharedSecret(sk, pk, compressed),
     (curve) => curve.getSharedSecret(sk, pk),
     (curve) => {
-      // Note: scalar is hashed from sk
       const { scalar } = curve.utils.getExtendedPublicKey(sk);
       const point = curve.ExtendedPoint.fromHex(pk).multiply(scalar);
       return point.toRawBytes();
@@ -57,7 +54,6 @@ export const convertPublicKeyFormat = (
   pk: Uint8Array,
   compressed: boolean
 ): Uint8Array =>
-  // only for secp256k1
   _exec(
     (curve) => curve.getSharedSecret(BigInt(1), pk, compressed),
     () => pk,

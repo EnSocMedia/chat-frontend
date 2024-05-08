@@ -8,8 +8,8 @@ import {
   export type SymmetricAlgorithm =
     | "aes-256-gcm"
     | "xchacha20"
-    | "aes-256-cbc" /* NOT RECOMMENDED, only for compatibility */;
-  export type NonceLength = 12 | 16; // aes-256-gcm only
+    | "aes-256-cbc" 
+  export type NonceLength = 12 | 16; 
   
   class Config {
     ellipticCurve: EllipticCurve = "secp256k1";

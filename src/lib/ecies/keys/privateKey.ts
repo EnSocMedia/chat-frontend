@@ -20,7 +20,6 @@ export class PrivateKey {
   public readonly publicKey: PublicKey;
 
   get secret(): Buffer {
-    // TODO: Uint8Array
     return Buffer.from(this.data);
   }
 
