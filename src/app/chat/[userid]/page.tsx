@@ -85,7 +85,9 @@ export default function Page({ params }: { params: { userid: string } }) {
     dispatch(sendMessageUsingHttp(message));
 
     setTextToSend("");
-    toggle();
+    //toggle();
+    const audio=new Audio("/movement.mp3")
+    audio.play();
   }
   const handleKeyPress = (event:any) => {
     if (event.key === 'Enter') {
