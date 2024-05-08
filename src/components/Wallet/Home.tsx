@@ -74,6 +74,7 @@ export default function MyComponent({ nfts }: { nfts: Nft[] }) {
                 </div>
               );
             })}
+            {nfts.length === 0 && <div>You donot hold any NFTs</div>}
           </div>
         </div>
 
